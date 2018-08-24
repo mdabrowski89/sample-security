@@ -1,0 +1,71 @@
+apply plugin: 'com.android.application'
+
+apply plugin: 'kotlin-android'
+
+apply plugin: 'kotlin-android-extensions'
+
+android {
+    compileSdkVersion Versions.compiledSdk
+    defaultConfig {
+        project.ext.appName = 'sample-security'
+        applicationId "pl.mobite.sample.security"
+        minSdkVersion Versions.minSdk
+        targetSdkVersion Versions.targetSdk
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+        test.java.srcDirs += 'src/test/kotlin'
+    }
+
+    buildTypes {
+        debug {
+            debuggable true
+            minifyEnabled false
+            applicationIdSuffix ".debug"
+            versionNameSuffix "-dev"
+            resValue "string", "app_name", "$project.ext.appName-dev"
+        }
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            resValue "string", "app_name", project.ext.appName
+        }
+    }
+
+    dexOptions {
+        javaMaxHeapSize "3g"
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation Dependencies.kotlinStdLib
+
+    implementation Dependencies.appcompatLib
+    implementation Dependencies.vectorDrawableLib
+    implementation Dependencies.materialLib
+    implementation Dependencies.constraintLayoutLib
+
+    testImplementation Dependencies.junitLib
+    androidTestImplementation Dependencies.testRunner
+    androidTestImplementation Dependencies.espressoLib
+}
+
+task changeApkName() {
+    android.applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            def date = new Date().format("yyMMdd_hhmmss")
+            def fileName = "${project.ext.appName}_${variant.name}_${variant.versionName}_${date}.apk"
+            output.outputFileName = fileName
+        }
+    }
+}
+
+gradle.taskGraph.whenReady {
+    changeApkName
+}
