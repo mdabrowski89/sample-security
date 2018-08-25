@@ -1,5 +1,5 @@
 <resources>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="title_secret_key">Secret Key</string>
+    <string name="title_fingerprint">Fingerprint</string>
+    <string name="title_pin">Pin</string>
 </resources>

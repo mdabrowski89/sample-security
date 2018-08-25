@@ -6,6 +6,7 @@ apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion Versions.compiledSdk
+
     defaultConfig {
         project.ext.appName = 'sample-security'
         applicationId "pl.mobite.sample.security"
@@ -49,7 +50,6 @@ dependencies {
     implementation Dependencies.appcompatLib
     implementation Dependencies.vectorDrawableLib
     implementation Dependencies.materialLib
-    implementation Dependencies.constraintLayoutLib
 
     testImplementation Dependencies.junitLib
     androidTestImplementation Dependencies.testRunner
