@@ -1,15 +1,18 @@
-package pl.mobite.sample.security
+package pl.mobite.sample.security.ui.components
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.*
-import pl.mobite.sample.security.fragments.FingerprintFragment
-import pl.mobite.sample.security.fragments.PinFragment
-import pl.mobite.sample.security.fragments.SecretKeyFragment
+import pl.mobite.sample.security.R
+import pl.mobite.sample.security.ui.components.fingerprint.FingerprintFragment
+import pl.mobite.sample.security.ui.components.pin.PinFragment
+import pl.mobite.sample.security.ui.components.secretkey.SecretKeyFragment
 
 class MainActivity : AppCompatActivity() {
+
+    private var lastFragmentTag: String? = null
 
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
@@ -33,13 +36,20 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // TODO: change navigation bar to navigation drawer, because in the future there will be more than 3 tabs
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
 
         navigation.selectedItemId = 0
-        showFragment(SECRET_KEY_FRAGMENT_TAG)
+        showFragment(savedInstanceState?.getString(LAST_FRAGMENT_TAG_KEY) ?: SECRET_KEY_FRAGMENT_TAG)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle?) {
+        outState?.putString(LAST_FRAGMENT_TAG_KEY, lastFragmentTag)
+        super.onSaveInstanceState(outState)
     }
 
     private fun showFragment(tag: String) {
+        lastFragmentTag = tag
         val fragment = supportFragmentManager.findFragmentByTag(tag)
         val addToBackStack = fragment == null
         val transaction = supportFragmentManager
@@ -69,5 +79,6 @@ class MainActivity : AppCompatActivity() {
         private const val SECRET_KEY_FRAGMENT_TAG = "SECRET_KEY_FRAGMENT_TAG"
         private const val FINGERPRINT_FRAGMENT_TAG = "FINGERPRINT_FRAGMENT_TAG"
         private const val PIN_FRAGMENT_TAG = "PIN_FRAGMENT_TAG"
+        private const val LAST_FRAGMENT_TAG_KEY = "LAST_FRAGMENT_TAG_KEY"
     }
 }

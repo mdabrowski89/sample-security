@@ -20,6 +20,7 @@ android {
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
         test.java.srcDirs += 'src/test/kotlin'
+        androidTest.java.srcDirs += 'src/androidTest/kotlin'
     }
 
     buildTypes {
@@ -45,7 +46,16 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
+    implementation project(':domain')
+
     implementation Dependencies.kotlinStdLib
+
+    implementation Dependencies.lifecycleViewModelsLib
+    implementation Dependencies.lifecycleExtensionsLib
+
+    implementation Dependencies.rxKotlinLib
+    implementation Dependencies.rxBindingLib
+    implementation Dependencies.rxRelayLib
 
     implementation Dependencies.appcompatLib
     implementation Dependencies.vectorDrawableLib

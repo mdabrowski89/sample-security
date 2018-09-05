@@ -1,0 +1,12 @@
+apply plugin: 'kotlin'
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation Dependencies.kotlinStdLib
+    implementation Dependencies.rxKotlinLib
+    implementation Dependencies.rxRelayLib
+
+    testImplementation Dependencies.junitLib
+    testImplementation Dependencies.mockitoLib
+}

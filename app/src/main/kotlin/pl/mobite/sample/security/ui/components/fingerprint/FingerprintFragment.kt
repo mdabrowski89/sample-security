@@ -1,4 +1,4 @@
-package pl.mobite.sample.security.fragments
+package pl.mobite.sample.security.ui.components.fingerprint
 
 import android.os.Bundle
 import android.view.LayoutInflater

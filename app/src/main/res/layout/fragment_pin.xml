@@ -8,7 +8,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/title_pin"
+        android:text="@string/pin_description"
         android:textAppearance="@style/TextAppearance.AppCompat.Display1"/>
 
     <EditText
