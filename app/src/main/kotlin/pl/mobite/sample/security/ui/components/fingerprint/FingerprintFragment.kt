@@ -19,5 +19,7 @@ class FingerprintFragment: Fragment() {
         fun getInstance(): Fragment {
             return FingerprintFragment()
         }
+
+        private const val KEY_ALIAS = "BUTTERCUP"
     }
 }

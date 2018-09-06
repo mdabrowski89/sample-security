@@ -19,5 +19,7 @@ class PinFragment: Fragment() {
         fun getInstance(): Fragment {
             return PinFragment()
         }
+
+        private const val KEY_ALIAS = "BUBBLES"
     }
 }

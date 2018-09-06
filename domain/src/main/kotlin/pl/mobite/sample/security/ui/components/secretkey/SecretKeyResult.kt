@@ -3,11 +3,9 @@ package pl.mobite.sample.security.ui.components.secretkey
 
 sealed class SecretKeyResult {
 
-    data class LoadKeyResult(val keyAlias: String?): SecretKeyResult()
+    data class HasValidKeyResult(val keyAlias: String): SecretKeyResult()
 
-    data class GenerateNewKeyResult(val keyAlias: String?): SecretKeyResult()
-
-    object ClearKeyResult: SecretKeyResult()
+    object NoValidKeyResult: SecretKeyResult()
 
     data class EncryptMessageResult(val messageEncrypted: String): SecretKeyResult()
 

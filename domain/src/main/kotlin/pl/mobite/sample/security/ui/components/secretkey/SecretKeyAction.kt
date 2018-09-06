@@ -3,11 +3,11 @@ package pl.mobite.sample.security.ui.components.secretkey
 
 sealed class SecretKeyAction {
 
-    data class LoadKeyAction(val keyAlias: String): SecretKeyAction()
+    data class CheckKeyAction(val keyAlias: String): SecretKeyAction()
 
     data class GenerateNewKeyAction(val keyAlias: String): SecretKeyAction()
 
-    data class ClearKeyAction(val keyAlias: String): SecretKeyAction()
+    data class RemoveKeyAction(val keyAlias: String): SecretKeyAction()
 
     data class EncryptMessageAction(val keyAlias: String, val messageToEncrypt: String): SecretKeyAction()
 

@@ -7,7 +7,7 @@ sealed class SecretKeyIntent {
 
     data class GenerateKeyIntent(val keyAlias: String): SecretKeyIntent()
 
-    data class ClearKeyIntent(val keyAlias: String): SecretKeyIntent()
+    data class RemoveKeyIntent(val keyAlias: String): SecretKeyIntent()
 
     data class EncryptMessageIntent(val keyAlias: String, val messageToEncrypt: String): SecretKeyIntent()
 

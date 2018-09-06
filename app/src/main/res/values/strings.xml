@@ -6,24 +6,24 @@
     <string name="button_encrypt">Encrypt</string>
     <string name="button_decrypt">Decrypt</string>
     <string name="button_clear_messages">Clear messages</string>
-    <string name="label_key_status">Key status: %s</string>
-    <string name="label_key_missing">no key</string>
-    <string name="label_key_exist">key exist</string>
+    <string name="label_key_alias">Secret key alias: %s</string>
+    <string name="label_key_missing">(no key)</string>
     <string name="label_message_to_encrypt">Message to encrypt:</string>
     <string name="label_encrypted_message">Encrypted message:</string>
     <string name="label_decrypted_message">Decrypted message:</string>
+    <string name="error_message">Error occurred</string>
 
     <!-- Secret key fragment -->
     <string name="secret_key_title">Secret Key</string>
-    <string name="secret_key_description">User can generate secret key which will be secured by the phone lock, and use this key to encrypt/decrypt data</string>
+    <string name="secret_key_description">You can generate secret key which will be secured by the phone lock, and use this key to encrypt/decrypt message</string>
 
     <!-- Fingerprint fragment -->
     <string name="fingerprint_title">Fingerprint</string>
-    <string name="fingerprint_description">User can generate secret key which will be secured with the user fingerprint, and use this key to encrypt/decrypt the data</string>
+    <string name="fingerprint_description">You can generate secret key which will be secured with the user fingerprint, and use this key to encrypt/decrypt the message</string>
 
     <!-- Pin fragment -->
     <string name="pin_title">Pin</string>
-    <string name="pin_description">User can generate secret key which will be secured with the pin, and use this key to encrypt/decrypt the data</string>
+    <string name="pin_description">You can generate secret key which will be secured with the pin, and use this key to encrypt/decrypt the message</string>
 
 
 </resources>

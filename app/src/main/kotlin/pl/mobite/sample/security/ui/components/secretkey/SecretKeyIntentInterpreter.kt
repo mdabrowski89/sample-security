@@ -9,9 +9,9 @@ class SecretKeyIntentInterpreter: Function<SecretKeyIntent, SecretKeyAction> {
 
     override fun apply(intent: SecretKeyIntent): SecretKeyAction {
         return when (intent) {
-            is InitialIntent -> LoadKeyAction(intent.keyAlias)
+            is InitialIntent -> CheckKeyAction(intent.keyAlias)
             is GenerateKeyIntent -> GenerateNewKeyAction(intent.keyAlias)
-            is ClearKeyIntent -> ClearKeyAction(intent.keyAlias)
+            is RemoveKeyIntent -> RemoveKeyAction(intent.keyAlias)
             is EncryptMessageIntent -> EncryptMessageAction(intent.keyAlias, intent.messageToEncrypt)
             is DecryptMessageIntent -> DecryptMessageAction(intent.keyAlias, intent.messageEncrypted)
             is ClearMessagesIntent -> ClearMessagesAction
