@@ -62,6 +62,8 @@ dependencies {
     implementation Dependencies.materialLib
 
     testImplementation Dependencies.junitLib
+    testImplementation Dependencies.mockitoLib
+
     androidTestImplementation Dependencies.testRunner
     androidTestImplementation Dependencies.espressoLib
 }

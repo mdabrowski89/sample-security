@@ -17,12 +17,12 @@ class SecretKeyActionProcessorTest {
 
     private val secretKeyRepositoryMock: SecretKeyRepository by lazyMock()
 
-    private lateinit var secretKeyActionProcessor: SecretKeyActionProcessor
+    private lateinit var processor: SecretKeyActionProcessor
     private lateinit var testObserver: TestObserver<SecretKeyResult>
 
     @Before
     fun setUp() {
-        secretKeyActionProcessor = SecretKeyActionProcessor(secretKeyRepositoryMock, ImmediateSchedulerProvider.instance)
+        processor = SecretKeyActionProcessor(secretKeyRepositoryMock, ImmediateSchedulerProvider.instance)
         testObserver = TestObserver()
     }
 
@@ -30,7 +30,7 @@ class SecretKeyActionProcessorTest {
     fun testCheckKeyActionProcessorHasKey() {
         `when`(secretKeyRepositoryMock.checkKey(dummyKeyAlias)).thenReturn(Single.just(true))
 
-        secretKeyActionProcessor.apply(Observable.just(CheckKeyAction(dummyKeyAlias)))
+        processor.apply(Observable.just(CheckKeyAction(dummyKeyAlias)))
                 .subscribe(testObserver)
 
         testObserver.assertValueSequence(listOf(
@@ -45,7 +45,7 @@ class SecretKeyActionProcessorTest {
     fun testCheckKeyActionProcessorDoesNotHaveKey() {
         `when`(secretKeyRepositoryMock.checkKey(dummyKeyAlias)).thenReturn(Single.just(false))
 
-        secretKeyActionProcessor.apply(Observable.just(CheckKeyAction(dummyKeyAlias)))
+        processor.apply(Observable.just(CheckKeyAction(dummyKeyAlias)))
                 .subscribe(testObserver)
 
         testObserver.assertValueSequence(listOf(
@@ -60,7 +60,7 @@ class SecretKeyActionProcessorTest {
     fun testCheckKeyActionProcessorFailure() {
         `when`(secretKeyRepositoryMock.checkKey(dummyKeyAlias)).thenReturn(Single.error(dummyThrowable))
 
-        secretKeyActionProcessor.apply(Observable.just(CheckKeyAction(dummyKeyAlias)))
+        processor.apply(Observable.just(CheckKeyAction(dummyKeyAlias)))
                 .subscribe(testObserver)
 
         testObserver.assertValueSequence(listOf(
@@ -75,7 +75,7 @@ class SecretKeyActionProcessorTest {
     fun testGenerateNewKeyActionProcessorSuccess() {
         `when`(secretKeyRepositoryMock.generateKey(dummyKeyAlias)).thenReturn(Completable.complete())
 
-        secretKeyActionProcessor.apply(Observable.just(GenerateNewKeyAction(dummyKeyAlias)))
+        processor.apply(Observable.just(GenerateNewKeyAction(dummyKeyAlias)))
                 .subscribe(testObserver)
 
         testObserver.assertValueSequence(listOf(
@@ -90,7 +90,7 @@ class SecretKeyActionProcessorTest {
     fun testGenerateNewKeyActionProcessorFailure() {
         `when`(secretKeyRepositoryMock.generateKey(dummyKeyAlias)).thenReturn(Completable.error(dummyThrowable))
 
-        secretKeyActionProcessor.apply(Observable.just(GenerateNewKeyAction(dummyKeyAlias)))
+        processor.apply(Observable.just(GenerateNewKeyAction(dummyKeyAlias)))
                 .subscribe(testObserver)
 
         testObserver.assertValueSequence(listOf(
@@ -105,7 +105,7 @@ class SecretKeyActionProcessorTest {
     fun testRemoveKeyActionProcessorSuccess() {
         `when`(secretKeyRepositoryMock.removeKey(dummyKeyAlias)).thenReturn(Completable.complete())
 
-        secretKeyActionProcessor.apply(Observable.just(RemoveKeyAction(dummyKeyAlias)))
+        processor.apply(Observable.just(RemoveKeyAction(dummyKeyAlias)))
                 .subscribe(testObserver)
 
         testObserver.assertValueSequence(listOf(
@@ -120,7 +120,7 @@ class SecretKeyActionProcessorTest {
     fun testRemoveActionProcessorFailure() {
         `when`(secretKeyRepositoryMock.removeKey(dummyKeyAlias)).thenReturn(Completable.error(dummyThrowable))
 
-        secretKeyActionProcessor.apply(Observable.just(RemoveKeyAction(dummyKeyAlias)))
+        processor.apply(Observable.just(RemoveKeyAction(dummyKeyAlias)))
                 .subscribe(testObserver)
 
         testObserver.assertValueSequence(listOf(
@@ -135,7 +135,7 @@ class SecretKeyActionProcessorTest {
     fun testEncryptMessageActionSuccess() {
         `when`(secretKeyRepositoryMock.encrypt(dummyKeyAlias, dummyMessageDecrypted)).thenReturn(Single.just(dummyMessageEncrypted))
 
-        secretKeyActionProcessor.apply(Observable.just(EncryptMessageAction(dummyKeyAlias, dummyMessageDecrypted)))
+        processor.apply(Observable.just(EncryptMessageAction(dummyKeyAlias, dummyMessageDecrypted)))
                 .subscribe(testObserver)
 
         testObserver.assertValueSequence(listOf(
@@ -150,7 +150,7 @@ class SecretKeyActionProcessorTest {
     fun testEncryptMessageActionFailure() {
         `when`(secretKeyRepositoryMock.encrypt(dummyKeyAlias, dummyMessageDecrypted)).thenReturn(Single.error(dummyThrowable))
 
-        secretKeyActionProcessor.apply(Observable.just(EncryptMessageAction(dummyKeyAlias, dummyMessageDecrypted)))
+        processor.apply(Observable.just(EncryptMessageAction(dummyKeyAlias, dummyMessageDecrypted)))
                 .subscribe(testObserver)
 
         testObserver.assertValueSequence(listOf(
@@ -165,7 +165,7 @@ class SecretKeyActionProcessorTest {
     fun testDecryptMessageActionSuccess() {
         `when`(secretKeyRepositoryMock.decrypt(dummyKeyAlias, dummyMessageEncrypted)).thenReturn(Single.just(dummyMessageDecrypted))
 
-        secretKeyActionProcessor.apply(Observable.just(DecryptMessageAction(dummyKeyAlias, dummyMessageEncrypted)))
+        processor.apply(Observable.just(DecryptMessageAction(dummyKeyAlias, dummyMessageEncrypted)))
                 .subscribe(testObserver)
 
         testObserver.assertValueSequence(listOf(
@@ -180,7 +180,7 @@ class SecretKeyActionProcessorTest {
     fun testDecryptMessageActionFailure() {
         `when`(secretKeyRepositoryMock.decrypt(dummyKeyAlias, dummyMessageEncrypted)).thenReturn(Single.error(dummyThrowable))
 
-        secretKeyActionProcessor.apply(Observable.just(DecryptMessageAction(dummyKeyAlias, dummyMessageEncrypted)))
+        processor.apply(Observable.just(DecryptMessageAction(dummyKeyAlias, dummyMessageEncrypted)))
                 .subscribe(testObserver)
 
         testObserver.assertValueSequence(listOf(
@@ -193,7 +193,7 @@ class SecretKeyActionProcessorTest {
 
     @Test
     fun testClearMessageAction() {
-        secretKeyActionProcessor.apply(Observable.just(ClearMessagesAction))
+        processor.apply(Observable.just(ClearMessagesAction))
                 .subscribe(testObserver)
 
         testObserver.assertValueSequence(listOf(
