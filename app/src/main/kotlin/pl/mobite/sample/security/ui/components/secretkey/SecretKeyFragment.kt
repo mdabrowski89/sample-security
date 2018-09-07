@@ -24,8 +24,9 @@ import pl.mobite.sample.security.utils.setVisibleOrGone
 class SecretKeyFragment: Fragment() {
 
     private lateinit var disposable: CompositeDisposable
-    private var lastViewState: SecretKeyViewState? = null
     private lateinit var viewModel: SecretKeyViewModel
+
+    private var lastViewState: SecretKeyViewState? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

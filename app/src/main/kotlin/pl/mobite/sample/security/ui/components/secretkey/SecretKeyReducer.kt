@@ -20,15 +20,18 @@ class SecretKeyReducer: BiFunction<SecretKeyViewState, SecretKeyResult, SecretKe
                     messageEncrypted = null,
                     messageDecrypted = null,
                     error = null
-            )
+            ).apply { clearMessage.set(true) }
             is EncryptMessageResult -> prevState.copy(
                     isLoading = false,
+                    secretKeyAlias = result.keyAlias,
                     messageEncrypted = result.messageEncrypted,
                     messageDecrypted = null,
                     error = null
             )
             is DecryptMessageResult -> prevState.copy(
                     isLoading = false,
+                    secretKeyAlias = result.keyAlias,
+                    messageEncrypted = result.messageEncrypted,
                     messageDecrypted = result.messageDecrypted,
                     error = null
             )

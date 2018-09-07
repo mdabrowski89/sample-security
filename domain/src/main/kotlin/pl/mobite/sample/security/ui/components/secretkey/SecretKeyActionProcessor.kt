@@ -74,7 +74,7 @@ class SecretKeyActionProcessor(
         actions.switchMap { action ->
             secretKeyRepository.encrypt(action.keyAlias, action.messageToEncrypt)
                     .toObservable()
-                    .map { messageEncrypted -> EncryptMessageResult(messageEncrypted) }
+                    .map { messageEncrypted -> EncryptMessageResult(action.keyAlias, messageEncrypted) }
                     .cast(SecretKeyResult::class.java)
                     .onErrorReturn { t -> ErrorResult(t) }
                     .subscribeOn(schedulerProvider.io())
@@ -87,7 +87,7 @@ class SecretKeyActionProcessor(
         actions.switchMap { action ->
             secretKeyRepository.decrypt(action.keyAlias, action.messageToDecrypt)
                     .toObservable()
-                    .map { messageDecrypted -> DecryptMessageResult(messageDecrypted) }
+                    .map { messageDecrypted -> DecryptMessageResult(action.keyAlias, action.messageToDecrypt, messageDecrypted) }
                     .cast(SecretKeyResult::class.java)
                     .onErrorReturn { t -> ErrorResult(t) }
                     .subscribeOn(schedulerProvider.io())

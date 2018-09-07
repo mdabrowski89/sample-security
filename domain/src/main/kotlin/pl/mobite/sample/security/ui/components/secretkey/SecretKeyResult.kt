@@ -7,9 +7,9 @@ sealed class SecretKeyResult {
 
     object NoValidKeyResult: SecretKeyResult()
 
-    data class EncryptMessageResult(val messageEncrypted: String): SecretKeyResult()
+    data class EncryptMessageResult(val keyAlias: String, val messageEncrypted: String): SecretKeyResult()
 
-    data class DecryptMessageResult(val messageDecrypted: String): SecretKeyResult()
+    data class DecryptMessageResult(val keyAlias: String, val messageEncrypted: String, val messageDecrypted: String): SecretKeyResult()
 
     object ClearMessagesResult: SecretKeyResult()
 
