@@ -35,6 +35,27 @@ data class SecretKeyViewState(
         writeParcelable(error, 0)
     }
 
+    fun toLoading() = this.copy(
+            isLoading = true,
+            error = null
+    )
+
+    fun toError(throwable: Throwable) = this.copy(
+            isLoading = false,
+            error = ViewStateError(throwable)
+    )
+
+    fun toSuccessEncryption(secretKeyAlias: String, messageEncrypted: String) = this.copy(
+            isLoading = false,
+            error = null,
+            secretKeyAlias = secretKeyAlias,
+            messageEncrypted = messageEncrypted
+    )
+
+    fun toSuccessDecryption() {
+
+    }
+
     companion object {
         fun default() = SecretKeyViewState(
                 secretKeyAlias = null,
