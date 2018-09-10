@@ -21,9 +21,9 @@ class SecretKeyViewModelTest {
         val intents = listOf(
                 InitialIntent(dummyKeyAlias)
         )
-        val stateTransformers = listOf(
-                { state: SecretKeyViewState -> state.loading() },
-                { state: SecretKeyViewState -> state.withKey(dummyKeyAlias) }
+        val stateTransformers = listOf<SecretKeyViewStateModifier>(
+                { state -> state.loading() },
+                { state -> state.withKey(dummyKeyAlias) }
         )
 
         initialStates.forEach(test(intents, stateTransformers))
@@ -36,7 +36,7 @@ class SecretKeyViewModelTest {
         val intents = listOf(
                 InitialIntent(dummyKeyAlias)
         )
-        val stateTransformers = listOf(
+        val stateTransformers = listOf<SecretKeyViewStateModifier>(
                 SecretKeyViewState::loading,
                 SecretKeyViewState::withoutKey
         )
@@ -51,9 +51,9 @@ class SecretKeyViewModelTest {
         val intents = listOf(
                 InitialIntent(dummyKeyAlias)
         )
-        val stateTransformers = listOf(
-                { state: SecretKeyViewState -> state.loading() },
-                { state: SecretKeyViewState -> state.withError(dummyThrowable) }
+        val stateTransformers = listOf<SecretKeyViewStateModifier>(
+                { state -> state.loading() },
+                { state -> state.withError(dummyThrowable) }
         )
         initialStates.forEach(test(intents, stateTransformers))
     }
@@ -65,9 +65,9 @@ class SecretKeyViewModelTest {
         val intents = listOf(
                 GenerateKeyIntent(dummyKeyAlias)
         )
-        val stateTransformers = listOf(
-                { state: SecretKeyViewState -> state.loading() },
-                { state: SecretKeyViewState -> state.withKey(dummyKeyAlias) }
+        val stateTransformers = listOf<SecretKeyViewStateModifier>(
+                { state -> state.loading() },
+                { state -> state.withKey(dummyKeyAlias) }
         )
 
         initialStates.forEach(test(intents, stateTransformers))
@@ -80,9 +80,9 @@ class SecretKeyViewModelTest {
         val intents = listOf(
                 GenerateKeyIntent(dummyKeyAlias)
         )
-        val stateTransformers = listOf(
-                { state: SecretKeyViewState -> state.loading() },
-                { state: SecretKeyViewState -> state.withError(dummyThrowable) }
+        val stateTransformers = listOf<SecretKeyViewStateModifier>(
+                { state -> state.loading() },
+                { state -> state.withError(dummyThrowable) }
         )
         initialStates.forEach(test(intents, stateTransformers))
     }
@@ -94,7 +94,7 @@ class SecretKeyViewModelTest {
         val intents = listOf(
                 RemoveKeyIntent(dummyKeyAlias)
         )
-        val stateTransformers = listOf(
+        val stateTransformers = listOf<SecretKeyViewStateModifier>(
                 SecretKeyViewState::loading,
                 SecretKeyViewState::withoutKey
         )
@@ -109,9 +109,9 @@ class SecretKeyViewModelTest {
         val intents = listOf(
                 RemoveKeyIntent(dummyKeyAlias)
         )
-        val stateTransformers = listOf(
-                { state: SecretKeyViewState -> state.loading() },
-                { state: SecretKeyViewState -> state.withError(dummyThrowable) }
+        val stateTransformers = listOf<SecretKeyViewStateModifier>(
+                { state -> state.loading() },
+                { state -> state.withError(dummyThrowable) }
         )
         initialStates.forEach(test(intents, stateTransformers))
     }
@@ -122,9 +122,9 @@ class SecretKeyViewModelTest {
         val intents = listOf(
                 EncryptMessageIntent(dummyKeyAlias, dummyMessageToEncrypt)
         )
-        val stateTransformers = listOf(
-                { state: SecretKeyViewState -> state.loading() },
-                { state: SecretKeyViewState -> state.withMessageEncrypted(dummyKeyAlias, dummyMessageEncrypted) }
+        val stateTransformers = listOf<SecretKeyViewStateModifier>(
+                { state -> state.loading() },
+                { state -> state.withMessageEncrypted(dummyKeyAlias, dummyMessageEncrypted) }
         )
 
         initialStates.forEach(test(intents, stateTransformers))
@@ -137,9 +137,9 @@ class SecretKeyViewModelTest {
         val intents = listOf(
                 EncryptMessageIntent(dummyKeyAlias, dummyMessageToEncrypt)
         )
-        val stateTransformers = listOf(
-                { state: SecretKeyViewState -> state.loading() },
-                { state: SecretKeyViewState -> state.withError(dummyThrowable) }
+        val stateTransformers = listOf<SecretKeyViewStateModifier>(
+                { state -> state.loading() },
+                { state -> state.withError(dummyThrowable) }
         )
         initialStates.forEach(test(intents, stateTransformers))
     }
@@ -151,9 +151,9 @@ class SecretKeyViewModelTest {
         val intents = listOf(
                 DecryptMessageIntent(dummyKeyAlias, dummyMessageEncrypted)
         )
-        val stateTransformers = listOf(
-                { state: SecretKeyViewState -> state.loading() },
-                { state: SecretKeyViewState -> state.withMessageDecrypted(dummyKeyAlias, dummyMessageEncrypted, dummyMessageDecrypted) }
+        val stateTransformers = listOf<SecretKeyViewStateModifier>(
+                { state -> state.loading() },
+                { state -> state.withMessageDecrypted(dummyKeyAlias, dummyMessageEncrypted, dummyMessageDecrypted) }
         )
 
         initialStates.forEach(test(intents, stateTransformers))
@@ -166,9 +166,9 @@ class SecretKeyViewModelTest {
         val intents = listOf(
                 DecryptMessageIntent(dummyKeyAlias, dummyMessageEncrypted)
         )
-        val stateTransformers = listOf(
-                { state: SecretKeyViewState -> state.loading() },
-                { state: SecretKeyViewState -> state.withError(dummyThrowable) }
+        val stateTransformers = listOf<SecretKeyViewStateModifier>(
+                { state -> state.loading() },
+                { state -> state.withError(dummyThrowable) }
         )
         initialStates.forEach(test(intents, stateTransformers))
     }
@@ -178,7 +178,7 @@ class SecretKeyViewModelTest {
         val intents = listOf(
                 ClearMessagesIntent
         )
-        val stateTransformers = listOf(
+        val stateTransformers = listOf<SecretKeyViewStateModifier>(
                 SecretKeyViewState::withMessageCleared
         )
 
@@ -201,24 +201,24 @@ class SecretKeyViewModelTest {
                 ClearMessagesIntent,
                 RemoveKeyIntent(dummyKeyAlias)
         )
-        val stateTransformers = listOf(
-                { state: SecretKeyViewState -> state.loading() },
-                { state: SecretKeyViewState -> state.withoutKey() },
-                { state: SecretKeyViewState -> state.loading() },
-                { state: SecretKeyViewState -> state.withKey(dummyKeyAlias) },
-                { state: SecretKeyViewState -> state.loading() },
-                { state: SecretKeyViewState -> state.withMessageEncrypted(dummyKeyAlias, dummyMessageEncrypted) },
-                { state: SecretKeyViewState -> state.loading() },
-                { state: SecretKeyViewState -> state.withMessageDecrypted(dummyKeyAlias, dummyMessageEncrypted, dummyMessageDecrypted) },
-                { state: SecretKeyViewState -> state.withMessageCleared() },
-                { state: SecretKeyViewState -> state.loading() },
-                { state: SecretKeyViewState -> state.withoutKey() }
+        val stateTransformers = listOf<SecretKeyViewStateModifier>(
+                { state -> state.loading() },
+                { state -> state.withoutKey() },
+                { state -> state.loading() },
+                { state -> state.withKey(dummyKeyAlias) },
+                { state -> state.loading() },
+                { state -> state.withMessageEncrypted(dummyKeyAlias, dummyMessageEncrypted) },
+                { state -> state.loading() },
+                { state -> state.withMessageDecrypted(dummyKeyAlias, dummyMessageEncrypted, dummyMessageDecrypted) },
+                { state -> state.withMessageCleared() },
+                { state -> state.loading() },
+                { state -> state.withoutKey() }
         )
-        initialStates.forEach(test(intents, stateTransformers))
 
+        initialStates.forEach(test(intents, stateTransformers))
     }
 
-    private fun test(intents: List<SecretKeyIntent>, stateTransformers: List<StateTransformer<SecretKeyViewState>>)
+    private fun test(intents: List<SecretKeyIntent>, stateTransformers: List<StateModifier<SecretKeyViewState>>)
             = { initialState: SecretKeyViewState ->
         val expectedStates = createExpectedStates(initialState, stateTransformers)
         test(initialState, intents, expectedStates)

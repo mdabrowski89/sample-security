@@ -3,7 +3,7 @@ package pl.mobite.sample.security.ui.components.secretkey
 import org.junit.Before
 import org.junit.Test
 import pl.mobite.sample.security.ui.components.secretkey.SecretKeyResult.*
-import pl.mobite.sample.security.utils.StateTransformer
+import pl.mobite.sample.security.utils.SecretKeyViewStateModifier
 import pl.mobite.sample.security.utils.assertSecretKeyViewState
 
 
@@ -19,61 +19,61 @@ class SecretKeyReducerTest {
     @Test
     fun testHasValidKeyResult() {
         val result = HasValidKeyResult(dummyKeyAlias)
-        val stateTransformer = { state: SecretKeyViewState -> state.withKey(dummyKeyAlias) }
+        val stateModifier = { state: SecretKeyViewState -> state.withKey(dummyKeyAlias) }
 
-        initialStates.forEach(test(result, stateTransformer))
+        initialStates.forEach(test(result, stateModifier))
     }
 
     @Test
     fun testNoValidKeyResult() {
         val result = NoValidKeyResult
-        val stateTransformer = SecretKeyViewState::withoutKey
+        val stateModifier = SecretKeyViewState::withoutKey
 
-        initialStates.forEach(test(result, stateTransformer))
+        initialStates.forEach(test(result, stateModifier))
     }
 
     @Test
     fun testEncryptMessageResult() {
         val result = EncryptMessageResult(dummyKeyAlias, dummyMessageEncrypted)
-        val stateTransformer = { state: SecretKeyViewState -> state.withMessageEncrypted(dummyKeyAlias, dummyMessageEncrypted)}
+        val stateModifier = { state: SecretKeyViewState -> state.withMessageEncrypted(dummyKeyAlias, dummyMessageEncrypted)}
 
-        initialStates.forEach(test(result, stateTransformer))
+        initialStates.forEach(test(result, stateModifier))
     }
 
     @Test
     fun testDecryptMessageResult() {
         val result = DecryptMessageResult(dummyKeyAlias, dummyMessageEncrypted, dummyMessageDecrypted)
-        val stateTransformer = { state: SecretKeyViewState -> state.withMessageDecrypted(dummyKeyAlias, dummyMessageEncrypted, dummyMessageDecrypted)}
+        val stateModifier = { state: SecretKeyViewState -> state.withMessageDecrypted(dummyKeyAlias, dummyMessageEncrypted, dummyMessageDecrypted)}
 
-        initialStates.forEach(test(result, stateTransformer))
+        initialStates.forEach(test(result, stateModifier))
     }
 
     @Test
     fun testClearMessagesResult() {
         val result = ClearMessagesResult
-        val stateTransformer = SecretKeyViewState::withMessageCleared
+        val stateModifier = SecretKeyViewState::withMessageCleared
 
-        initialStates.forEach(test(result, stateTransformer))
+        initialStates.forEach(test(result, stateModifier))
     }
 
     @Test
     fun testInFlightResult() {
         val result = InFlightResult
-        val stateTransformer = SecretKeyViewState::loading
+        val stateModifier = SecretKeyViewState::loading
 
-        initialStates.forEach(test(result, stateTransformer))
+        initialStates.forEach(test(result, stateModifier))
     }
 
     @Test
     fun testErrorResult() {
         val result = ErrorResult(dummyThrowable)
-        val stateTransformer = { state: SecretKeyViewState -> state.withError(dummyThrowable)}
+        val stateModifier = { state: SecretKeyViewState -> state.withError(dummyThrowable)}
 
-        initialStates.forEach(test(result, stateTransformer))
+        initialStates.forEach(test(result, stateModifier))
     }
 
-    private fun test(result: SecretKeyResult, stateTransformer: StateTransformer<SecretKeyViewState>) = { initialState: SecretKeyViewState ->
-        val expectedState = stateTransformer(initialState)
+    private fun test(result: SecretKeyResult, stateModifier: SecretKeyViewStateModifier) = { initialState: SecretKeyViewState ->
+        val expectedState = stateModifier(initialState)
         val testedState = reducer.apply(initialState, result)
         assertSecretKeyViewState(expectedState, testedState)
     }

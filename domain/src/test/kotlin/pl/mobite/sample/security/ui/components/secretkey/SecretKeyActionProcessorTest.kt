@@ -22,158 +22,184 @@ class SecretKeyActionProcessorTest {
     fun testCheckKeyActionProcessorHasKey() {
         `when`(secretKeyRepositoryMock.checkKey(dummyKeyAlias)).thenReturn(Single.just(true))
 
-        val action = CheckKeyAction(dummyKeyAlias)
+        val actions = listOf(
+                CheckKeyAction(dummyKeyAlias)
+        )
         val expectedResults = listOf(
                 InFlightResult,
                 HasValidKeyResult(dummyKeyAlias)
         )
 
-        test(action, expectedResults)
+        test(actions, expectedResults)
     }
 
     @Test
     fun testCheckKeyActionProcessorDoesNotHaveKey() {
         `when`(secretKeyRepositoryMock.checkKey(dummyKeyAlias)).thenReturn(Single.just(false))
 
-        val action = CheckKeyAction(dummyKeyAlias)
+        val actions = listOf(
+                CheckKeyAction(dummyKeyAlias)
+        )
         val expectedResults = listOf(
                 InFlightResult,
                 NoValidKeyResult
         )
 
-        test(action, expectedResults)
+        test(actions, expectedResults)
     }
 
     @Test
     fun testCheckKeyActionProcessorFailure() {
         `when`(secretKeyRepositoryMock.checkKey(dummyKeyAlias)).thenReturn(Single.error(dummyThrowable))
 
-        val action = CheckKeyAction(dummyKeyAlias)
+        val actions = listOf(
+                CheckKeyAction(dummyKeyAlias)
+        )
         val expectedResults = listOf(
                 InFlightResult,
                 ErrorResult(dummyThrowable)
         )
 
-        test(action, expectedResults)
+        test(actions, expectedResults)
     }
 
     @Test
     fun testGenerateNewKeyActionProcessorSuccess() {
         `when`(secretKeyRepositoryMock.generateKey(dummyKeyAlias)).thenReturn(Completable.complete())
 
-        val action = GenerateNewKeyAction(dummyKeyAlias)
+        val actions = listOf(
+                GenerateNewKeyAction(dummyKeyAlias)
+        )
         val expectedResults = listOf(
                 InFlightResult,
                 HasValidKeyResult(dummyKeyAlias)
         )
 
-        test(action, expectedResults)
+        test(actions, expectedResults)
     }
 
     @Test
     fun testGenerateNewKeyActionProcessorFailure() {
         `when`(secretKeyRepositoryMock.generateKey(dummyKeyAlias)).thenReturn(Completable.error(dummyThrowable))
 
-        val action = GenerateNewKeyAction(dummyKeyAlias)
+        val actions = listOf(
+                GenerateNewKeyAction(dummyKeyAlias)
+        )
         val expectedResults = listOf(
                 InFlightResult,
                 ErrorResult(dummyThrowable)
         )
 
-        test(action, expectedResults)
+        test(actions, expectedResults)
     }
 
     @Test
     fun testRemoveKeyActionProcessorSuccess() {
         `when`(secretKeyRepositoryMock.removeKey(dummyKeyAlias)).thenReturn(Completable.complete())
 
-        val action = RemoveKeyAction(dummyKeyAlias)
+        val actions = listOf(
+                RemoveKeyAction(dummyKeyAlias)
+        )
         val expectedResults = listOf(
                 InFlightResult,
                 NoValidKeyResult
         )
 
-        test(action, expectedResults)
+        test(actions, expectedResults)
     }
 
     @Test
     fun testRemoveActionProcessorFailure() {
         `when`(secretKeyRepositoryMock.removeKey(dummyKeyAlias)).thenReturn(Completable.error(dummyThrowable))
 
-        val action = RemoveKeyAction(dummyKeyAlias)
+        val actions = listOf(
+                RemoveKeyAction(dummyKeyAlias)
+        )
         val expectedResults = listOf(
                 InFlightResult,
                 ErrorResult(dummyThrowable)
         )
 
-        test(action, expectedResults)
+        test(actions, expectedResults)
     }
 
     @Test
     fun testEncryptMessageActionSuccess() {
         `when`(secretKeyRepositoryMock.encrypt(dummyKeyAlias, dummyMessageDecrypted)).thenReturn(Single.just(dummyMessageEncrypted))
 
-        val action = EncryptMessageAction(dummyKeyAlias, dummyMessageDecrypted)
+        val actions = listOf(
+                EncryptMessageAction(dummyKeyAlias, dummyMessageDecrypted)
+        )
         val expectedResults = listOf(
                 InFlightResult,
                 EncryptMessageResult(dummyKeyAlias, dummyMessageEncrypted)
         )
 
-        test(action, expectedResults)
+        test(actions, expectedResults)
     }
 
     @Test
     fun testEncryptMessageActionFailure() {
         `when`(secretKeyRepositoryMock.encrypt(dummyKeyAlias, dummyMessageDecrypted)).thenReturn(Single.error(dummyThrowable))
 
-        val action = EncryptMessageAction(dummyKeyAlias, dummyMessageDecrypted)
+        val actions = listOf(
+                EncryptMessageAction(dummyKeyAlias, dummyMessageDecrypted)
+        )
         val expectedResults = listOf(
                 InFlightResult,
                 ErrorResult(dummyThrowable)
         )
 
-        test(action, expectedResults)
+        test(actions, expectedResults)
     }
 
     @Test
     fun testDecryptMessageActionSuccess() {
         `when`(secretKeyRepositoryMock.decrypt(dummyKeyAlias, dummyMessageEncrypted)).thenReturn(Single.just(dummyMessageDecrypted))
 
-        val action = DecryptMessageAction(dummyKeyAlias, dummyMessageEncrypted)
+        val actions = listOf(
+                DecryptMessageAction(dummyKeyAlias, dummyMessageEncrypted)
+        )
         val expectedResults = listOf(
                 InFlightResult,
                 DecryptMessageResult(dummyKeyAlias, dummyMessageEncrypted, dummyMessageDecrypted)
         )
 
-        test(action, expectedResults)
+        test(actions, expectedResults)
     }
 
     @Test
     fun testDecryptMessageActionFailure() {
         `when`(secretKeyRepositoryMock.decrypt(dummyKeyAlias, dummyMessageEncrypted)).thenReturn(Single.error(dummyThrowable))
 
-        val action = DecryptMessageAction(dummyKeyAlias, dummyMessageEncrypted)
+        val actions = listOf(
+                DecryptMessageAction(dummyKeyAlias, dummyMessageEncrypted)
+        )
         val expectedResults = listOf(
                 InFlightResult,
                 ErrorResult(dummyThrowable)
         )
 
-        test(action, expectedResults)
+        test(actions, expectedResults)
     }
 
     @Test
     fun testClearMessageAction() {
-        val action = ClearMessagesAction
-        val expectedResults = listOf(ClearMessagesResult)
+        val actions = listOf(
+                ClearMessagesAction
+        )
+        val expectedResults = listOf(
+                ClearMessagesResult
+        )
 
-        test(action, expectedResults)
+        test(actions, expectedResults)
     }
 
-    private fun test(action: SecretKeyAction, expectedResults: List<SecretKeyResult>) {
+    private fun test(actions: List<SecretKeyAction>, expectedResults: List<SecretKeyResult>) {
         val processor = SecretKeyActionProcessor(secretKeyRepositoryMock, ImmediateSchedulerProvider.instance)
         val testObserver = TestObserver<SecretKeyResult>()
 
-        processor.apply(Observable.just(action))
+        processor.apply(Observable.fromIterable(actions))
                 .subscribe(testObserver)
 
         testObserver.assertValueCount(expectedResults.size)
