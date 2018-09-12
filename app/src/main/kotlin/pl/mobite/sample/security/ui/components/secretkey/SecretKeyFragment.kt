@@ -110,7 +110,6 @@ class SecretKeyFragment: Fragment() {
         with(viewState) {
             if (error != null) {
                 handleError(error)
-                return
             }
 
             val hasSecretKey = secretKeyAlias != null
@@ -143,7 +142,6 @@ class SecretKeyFragment: Fragment() {
             messageInput.isEnabled = !isLoading
             encryptButton.isEnabled = !isLoading && messageInput.text?.isNotBlank() ?: false
             decryptButton.isEnabled = !isLoading
-
         }
     }
 

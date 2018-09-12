@@ -1,10 +1,13 @@
 package pl.mobite.sample.security.ui.components
 
 import android.os.Bundle
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.app_bar_main.*
 import pl.mobite.sample.security.R
 import pl.mobite.sample.security.ui.components.fingerprint.FingerprintFragment
 import pl.mobite.sample.security.ui.components.pin.PinFragment
@@ -14,33 +17,36 @@ class MainActivity : AppCompatActivity() {
 
     private var lastFragmentTag: String? = null
 
-    private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
+    private val mOnNavigationItemSelectedListener = NavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
-            R.id.navigation_secret_key -> {
+            R.id.navSecretKey -> {
                 showFragment(SECRET_KEY_FRAGMENT_TAG)
-                return@OnNavigationItemSelectedListener true
             }
-            R.id.navigation_fingerprint -> {
+            R.id.navFingerprint -> {
                 showFragment(FINGERPRINT_FRAGMENT_TAG)
-                return@OnNavigationItemSelectedListener true
             }
-            R.id.navigation_pin -> {
+            R.id.navPin -> {
                 showFragment(PIN_FRAGMENT_TAG)
-                return@OnNavigationItemSelectedListener true
             }
         }
-        false
+        drawerLayout.closeDrawer(GravityCompat.START)
+        true
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        setSupportActionBar(toolbar)
 
-        // TODO: change navigation bar to navigation drawer, because in the future there will be more than 3 tabs
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
+        val toggle = ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.nav_drawer_open, R.string.nav_drawer_close)
+        drawerLayout.addDrawerListener(toggle)
+        toggle.syncState()
 
-        navigation.selectedItemId = 0
-        showFragment(savedInstanceState?.getString(LAST_FRAGMENT_TAG_KEY) ?: SECRET_KEY_FRAGMENT_TAG)
+        navigationView.setNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
+
+        val lastFragmentTag = savedInstanceState?.getString(LAST_FRAGMENT_TAG_KEY) ?: SECRET_KEY_FRAGMENT_TAG
+        showFragment(lastFragmentTag)
+        navigationView.setCheckedItem(getItemIdForTag(lastFragmentTag))
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
@@ -50,6 +56,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun showFragment(tag: String) {
         lastFragmentTag = tag
+        setTitle(getScreenTitleForTag(tag))
         val fragment = supportFragmentManager.findFragmentByTag(tag)
         val addToBackStack = fragment == null
         val transaction = supportFragmentManager
@@ -70,8 +77,30 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun getScreenTitleForTag(tag: String): Int {
+        return when(tag) {
+            SECRET_KEY_FRAGMENT_TAG -> R.string.secret_key_title
+            FINGERPRINT_FRAGMENT_TAG -> R.string.fingerprint_title
+            PIN_FRAGMENT_TAG -> R.string.pin_title
+            else -> throw Exception("Invalid fragment tag: $tag")
+        }
+    }
+
+    private fun getItemIdForTag(tag: String): Int {
+        return when(tag) {
+            SECRET_KEY_FRAGMENT_TAG -> R.id.navSecretKey
+            FINGERPRINT_FRAGMENT_TAG -> R.id.navFingerprint
+            PIN_FRAGMENT_TAG -> R.id.navPin
+            else -> throw Exception("Invalid fragment tag: $tag")
+        }
+    }
+
     override fun onBackPressed() {
-        finish()
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START)
+        } else {
+            super.onBackPressed()
+        }
     }
 
     companion object {

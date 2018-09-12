@@ -13,6 +13,11 @@
     <string name="label_decrypted_message">Decrypted message:</string>
     <string name="error_message">Error occurred</string>
 
+    <!-- Main activity -->
+    <string name="nav_header_title">Security</string>
+    <string name="nav_drawer_open">Open navigation drawer</string>
+    <string name="nav_drawer_close">Close navigation drawer</string>
+
     <!-- Secret key fragment -->
     <string name="secret_key_title">Secret Key</string>
     <string name="secret_key_description">You can generate secret key which will be secured by the phone lock, and use this key to encrypt/decrypt message</string>
