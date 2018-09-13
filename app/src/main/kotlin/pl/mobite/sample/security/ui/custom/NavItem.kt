@@ -4,7 +4,7 @@ import android.os.Parcel
 import android.os.Parcelable
 
 
-class NavItem(val itemId: Int, val fragmentTag: String, val titleResId: Int): Parcelable {
+class NavItem(val navItemId: Int, val fragmentTag: String, val screenTitleResId: Int): Parcelable {
 
     override fun describeContents() = 0
 
@@ -15,9 +15,9 @@ class NavItem(val itemId: Int, val fragmentTag: String, val titleResId: Int): Pa
     )
 
     override fun writeToParcel(dest: Parcel, flags: Int) = with(dest) {
-        writeInt(itemId)
+        writeInt(navItemId)
         writeString(fragmentTag)
-        writeInt(titleResId)
+        writeInt(screenTitleResId)
     }
 
     companion object {

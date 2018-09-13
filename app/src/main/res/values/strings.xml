@@ -14,20 +14,23 @@
     <string name="error_message">Error occurred</string>
 
     <!-- Main activity -->
-    <string name="nav_header_title">Security</string>
-    <string name="nav_drawer_open">Open navigation drawer</string>
-    <string name="nav_drawer_close">Close navigation drawer</string>
+    <string name="main_nav_header_title">Security</string>
+    <string name="main_nav_drawer_open_desc">Open navigation drawer</string>
+    <string name="main_nav_drawer_close_desc">Close navigation drawer</string>
 
     <!-- Secret key fragment -->
-    <string name="secret_key_title">Secret Key</string>
+    <string name="secret_key_nav_item_title">Secret Key</string>
+    <string name="secret_key_screen_title">@string/secret_key_nav_item_title</string>
     <string name="secret_key_description">You can generate secret key which will be secured by the phone lock, and use this key to encrypt/decrypt message</string>
 
     <!-- Fingerprint fragment -->
-    <string name="fingerprint_title">Fingerprint</string>
+    <string name="fingerprint_nav_item_title">Fingerprint</string>
+    <string name="fingerprint_screen_title">@string/fingerprint_nav_item_title</string>
     <string name="fingerprint_description">You can generate secret key which will be secured with the user fingerprint, and use this key to encrypt/decrypt the message</string>
 
     <!-- Pin fragment -->
-    <string name="pin_title">Pin</string>
+    <string name="pin_nav_item_title">Pin</string>
+    <string name="pin_screen_title">@string/pin_nav_item_title</string>
     <string name="pin_description">You can generate secret key which will be secured with the pin, and use this key to encrypt/decrypt the message</string>
 
 
