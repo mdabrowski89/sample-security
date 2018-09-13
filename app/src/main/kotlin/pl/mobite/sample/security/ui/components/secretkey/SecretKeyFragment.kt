@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.fragment_secret_key.*
 import pl.mobite.sample.security.R
 import pl.mobite.sample.security.data.models.ViewStateError
 import pl.mobite.sample.security.ui.components.secretkey.SecretKeyIntent.*
-import pl.mobite.sample.security.utils.CustomTextWatcher
+import pl.mobite.sample.security.ui.custom.CustomTextWatcher
 import pl.mobite.sample.security.utils.SampleSecurityViewModelFactory
 import pl.mobite.sample.security.utils.debounceButton
 import pl.mobite.sample.security.utils.setVisibleOrGone
@@ -26,7 +26,7 @@ class SecretKeyFragment: Fragment() {
     private lateinit var disposable: CompositeDisposable
     private lateinit var viewModel: SecretKeyViewModel
 
-    private var lastViewState: SecretKeyViewState? = null
+    private var currentViewState: SecretKeyViewState? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,7 +65,7 @@ class SecretKeyFragment: Fragment() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putParcelable(SecretKeyViewState.PARCEL_KEY, lastViewState)
+        outState.putParcelable(SecretKeyViewState.PARCEL_KEY, currentViewState)
     }
 
     private fun intents(): Observable<SecretKeyIntent> {
@@ -147,7 +147,7 @@ class SecretKeyFragment: Fragment() {
 
     private fun saveViewState(viewState: SecretKeyViewState) {
         if (!viewState.isLoading) {
-            lastViewState = viewState
+            currentViewState = viewState
         }
     }
 
