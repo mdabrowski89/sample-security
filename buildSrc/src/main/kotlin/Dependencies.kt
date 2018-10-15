@@ -1,6 +1,6 @@
 object Versions {
 
-    const val kotlin = "1.2.61"
+    const val kotlin = "1.2.71"
 
     const val minSdk = 17
     const val compiledSdk = 28
