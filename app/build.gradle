@@ -6,6 +6,7 @@ apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion Versions.compiledSdk
+    buildToolsVersion Versions.buildTools
 
     defaultConfig {
         project.ext.appName = 'sample-security'
@@ -64,7 +65,7 @@ dependencies {
     testImplementation Dependencies.junitLib
     testImplementation Dependencies.mockitoLib
 
-    androidTestImplementation Dependencies.testRunner
+    androidTestImplementation Dependencies.testRunnerLib
     androidTestImplementation Dependencies.espressoLib
 }
 
