@@ -50,17 +50,23 @@ dependencies {
     implementation project(':domain')
 
     implementation Dependencies.kotlinStdLib
+    implementation Dependencies.kotlinReflectLib
 
-    implementation Dependencies.lifecycleViewModelsLib
-    implementation Dependencies.lifecycleExtensionsLib
+    implementation Dependencies.androidxCoreLib
+    implementation Dependencies.androidxAppcompatLib
+    implementation Dependencies.androidxVectorDrawableLib
+    implementation Dependencies.androidxLegacySupportLib
+    implementation Dependencies.androidxMaterialLib
+
+    implementation Dependencies.androidxLifecycleViewModelsLib
+    implementation Dependencies.androidxLifecycleExtensionsLib
+
+    implementation Dependencies.archNavigationFragmentLib
+    implementation Dependencies.archNavigationUiLib
 
     implementation Dependencies.rxKotlinLib
     implementation Dependencies.rxBindingLib
     implementation Dependencies.rxRelayLib
-
-    implementation Dependencies.appcompatLib
-    implementation Dependencies.vectorDrawableLib
-    implementation Dependencies.materialLib
 
     testImplementation Dependencies.junitLib
     testImplementation Dependencies.mockitoLib
@@ -72,7 +78,7 @@ dependencies {
 task changeApkName() {
     android.applicationVariants.all { variant ->
         variant.outputs.all { output ->
-            def date = new Date().format("yyMMdd_hhmmss")
+            def date = new Date().format("yyMMdd_HHmmss")
             def fileName = "${project.ext.appName}_${variant.name}_${variant.versionName}_${date}.apk"
             output.outputFileName = fileName
         }

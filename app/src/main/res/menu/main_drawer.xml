@@ -3,17 +3,17 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/navItemSecretKey"
+            android:id="@+id/secretKeyFragment"
             android:icon="@drawable/ic_home_black_24dp"
             android:title="@string/secret_key_nav_item_title"/>
 
         <item
-            android:id="@+id/navItemFingerprint"
+            android:id="@+id/fingerprintFragment"
             android:icon="@drawable/ic_dashboard_black_24dp"
             android:title="@string/fingerprint_nav_item_title"/>
 
         <item
-            android:id="@+id/navItemPin"
+            android:id="@+id/pinFragment"
             android:icon="@drawable/ic_notifications_black_24dp"
             android:title="@string/pin_nav_item_title"/>
     </group>
