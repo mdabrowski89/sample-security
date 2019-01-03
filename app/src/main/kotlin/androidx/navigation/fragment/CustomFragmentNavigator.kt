@@ -31,7 +31,8 @@ class CustomFragmentNavigator(
 
         val fragmentClass = destination.fragmentClass
         val tag = fragmentClass.name
-        val frag = createFragment(tag, fragmentClass, args)
+        val oldFragmentInstance = mFragmentManager.findFragmentByTag(tag)
+        val fragment = oldFragmentInstance ?: createNewFragmentInstance(fragmentClass, args)
         val ft = mFragmentManager.beginTransaction()
 
         var enterAnim = navOptions?.enterAnim ?: -1
@@ -46,13 +47,15 @@ class CustomFragmentNavigator(
             ft.setCustomAnimations(enterAnim, exitAnim, popEnterAnim, popExitAnim)
         }
 
-        ft.replace(containerId, frag, tag)
-        ft.setPrimaryNavigationFragment(frag)
+        ft.replace(containerId, fragment, tag)
+        ft.setPrimaryNavigationFragment(fragment)
+        if (oldFragmentInstance == null) {
+            ft.addToBackStack(null)
+        }
 
         @IdRes val destId = destination.id
         val initialNavigation = mBackStack.isEmpty()
         val isClearTask = navOptions != null && navOptions.shouldClearTask()
-        // TODO Build first class singleTop behavior for fragments
         val isSingleTopReplacement = (navOptions != null && !initialNavigation
                 && navOptions.shouldLaunchSingleTop()
                 && mBackStack.peekLast() == destId)
@@ -91,10 +94,10 @@ class CustomFragmentNavigator(
         dispatchOnNavigatorNavigated(destId, backStackEffect)
     }
 
-    private fun createFragment(tag: String, fragmentClass: Class<out Fragment>, args: Bundle?): Fragment {
+    private fun createNewFragmentInstance(fragmentClass: Class<out Fragment>, args: Bundle?): Fragment {
         val f: Fragment
         try {
-            f = mFragmentManager.findFragmentByTag(tag) ?: fragmentClass.newInstance()
+            f = fragmentClass.newInstance()
         } catch (e: Exception) {
             throw RuntimeException(e)
         }

@@ -3,18 +3,18 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main_nav_graph"
-    app:startDestination="@id/pinFragment">
+    app:startDestination="@id/secretKeyFragment">
 
     <custom_fragment
-        android:id="@+id/pinFragment"
-        android:name="pl.mobite.sample.security.ui.components.pin.PinFragment"
-        android:label="PinFragment"/>
+        android:id="@+id/secretKeyFragment"
+        android:name="pl.mobite.sample.security.ui.components.secretkey.SecretKeyFragment"
+        android:label="SecretKeyFragment"/>
     <custom_fragment
         android:id="@+id/fingerprintFragment"
         android:name="pl.mobite.sample.security.ui.components.fingerprint.FingerprintFragment"
         android:label="FingerprintFragment"/>
     <custom_fragment
-        android:id="@+id/secretKeyFragment"
-        android:name="pl.mobite.sample.security.ui.components.secretkey.SecretKeyFragment"
-        android:label="SecretKeyFragment"/>
+        android:id="@+id/pinFragment"
+        android:name="pl.mobite.sample.security.ui.components.pin.PinFragment"
+        android:label="PinFragment"/>
 </navigation>
