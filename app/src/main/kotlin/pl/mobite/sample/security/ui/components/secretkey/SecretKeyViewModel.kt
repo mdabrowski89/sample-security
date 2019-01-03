@@ -17,9 +17,9 @@ class SecretKeyViewModel(
 
     private val secretKeyViewStateSource: Observable<SecretKeyViewState> by lazy {
         secretKeyIntentSource
-                .map(SecretKeyIntentInterpreter())
+                .map { it.action }
                 .compose(SecretKeyActionProcessor(secretKeyRepository, schedulerProvider))
-                .scan(initialState ?: SecretKeyViewState.default(), SecretKeyReducer())
+                .scan(initialState ?: SecretKeyViewState.default()) { prevState, result -> result.reduce(prevState) }
                 .distinctUntilChanged()
                 .replay(1)
                 .autoConnect(0)
