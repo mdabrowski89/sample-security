@@ -4,11 +4,12 @@ import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import androidx.annotation.IdRes
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.NavOptions
 import androidx.navigation.Navigator
 
-
+@Navigator.Name("custom_fragment")
 class CustomFragmentNavigator(
     context: Context,
     fragmentManager: FragmentManager,
@@ -27,7 +28,10 @@ class CustomFragmentNavigator(
             Log.i(TAG, "Ignoring navigate() call: FragmentManager has already" + " saved its state")
             return
         }
-        val frag = destination.createFragment(args)
+
+        val fragmentClass = destination.fragmentClass
+        val tag = fragmentClass.name
+        val frag = createFragment(tag, fragmentClass, args)
         val ft = mFragmentManager.beginTransaction()
 
         var enterAnim = navOptions?.enterAnim ?: -1
@@ -42,7 +46,7 @@ class CustomFragmentNavigator(
             ft.setCustomAnimations(enterAnim, exitAnim, popEnterAnim, popExitAnim)
         }
 
-        ft.replace(containerId, frag)
+        ft.replace(containerId, frag, tag)
         ft.setPrimaryNavigationFragment(frag)
 
         @IdRes val destId = destination.id
@@ -85,5 +89,19 @@ class CustomFragmentNavigator(
             mBackStack.add(destId)
         }
         dispatchOnNavigatorNavigated(destId, backStackEffect)
+    }
+
+    private fun createFragment(tag: String, fragmentClass: Class<out Fragment>, args: Bundle?): Fragment {
+        val f: Fragment
+        try {
+            f = mFragmentManager.findFragmentByTag(tag) ?: fragmentClass.newInstance()
+        } catch (e: Exception) {
+            throw RuntimeException(e)
+        }
+
+        if (args != null) {
+            f.arguments = args
+        }
+        return f
     }
 }

@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity() {
         //showFragment(savedInstanceState?.getParcelable(NavItem.PARCEL_KEY) ?: navItems.first())
        // navController.graph.findNode(R)
         //val navigationProvider = NavigatorProvider()
-        navController.navigatorProvider.addNavigator("CustomFragmentNavigator", CustomFragmentNavigator(this, supportFragmentManager, R.id.mainNavHostFragment))
+        navController.navigatorProvider.addNavigator("custom_fragment", CustomFragmentNavigator(this, supportFragmentManager, R.id.mainNavHostFragment))
         //val customGraph = NavGraph(CustomFragmentNavigator(this, supportFragmentManager, R.id.mainNavHostFragment))
         NavigationUI.setupWithNavController(navigationView, navController)
     }

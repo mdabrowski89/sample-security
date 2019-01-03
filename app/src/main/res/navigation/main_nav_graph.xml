@@ -5,15 +5,15 @@
     android:id="@+id/main_nav_graph"
     app:startDestination="@id/pinFragment">
 
-    <fragment
+    <custom_fragment
         android:id="@+id/pinFragment"
         android:name="pl.mobite.sample.security.ui.components.pin.PinFragment"
         android:label="PinFragment"/>
-    <fragment
+    <custom_fragment
         android:id="@+id/fingerprintFragment"
         android:name="pl.mobite.sample.security.ui.components.fingerprint.FingerprintFragment"
         android:label="FingerprintFragment"/>
-    <fragment
+    <custom_fragment
         android:id="@+id/secretKeyFragment"
         android:name="pl.mobite.sample.security.ui.components.secretkey.SecretKeyFragment"
         android:label="SecretKeyFragment"/>
