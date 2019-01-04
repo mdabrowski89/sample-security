@@ -2,27 +2,8 @@ package pl.mobite.sample.security.ui.components.secretkey
 
 import io.reactivex.Observable
 import pl.mobite.sample.security.data.repositories.SecretKeyRepository
-import pl.mobite.sample.security.ui.base.MviAction
-import pl.mobite.sample.security.ui.base.MviIntent
-import pl.mobite.sample.security.ui.base.MviProcessor
-import pl.mobite.sample.security.ui.base.MviResult
+import pl.mobite.sample.security.ui.base.*
 import pl.mobite.sample.security.ui.components.secretkey.SecretKeyAction.*
-
-
-sealed class SecretKeyIntent(action: SecretKeyAction): MviIntent<SecretKeyAction>(action) {
-
-    data class InitialIntent(val keyAlias: String): SecretKeyIntent(CheckKeyAction(keyAlias))
-
-    data class GenerateKeyIntent(val keyAlias: String): SecretKeyIntent(GenerateNewKeyAction(keyAlias))
-
-    data class RemoveKeyIntent(val keyAlias: String): SecretKeyIntent(RemoveKeyAction(keyAlias))
-
-    data class EncryptMessageIntent(val keyAlias: String, val messageToEncrypt: String): SecretKeyIntent(EncryptMessageAction(keyAlias, messageToEncrypt))
-
-    data class DecryptMessageIntent(val keyAlias: String, val messageEncrypted: String): SecretKeyIntent(DecryptMessageAction(keyAlias, messageEncrypted))
-
-    object ClearMessagesIntent: SecretKeyIntent(ClearMessagesAction)
-}
 
 sealed class SecretKeyAction: MviAction {
 
@@ -44,15 +25,17 @@ class CheckKeyProcessor(
 ): MviProcessor<CheckKeyAction, SecretKeyResult> {
 
     override fun process(action: CheckKeyAction): Observable<SecretKeyResult> {
-        return secretKeyRepository.checkKey(action.keyAlias)
-            .toObservable()
-            .map { hasKey -> if (hasKey) {
-                SecretKeyResult.HasValidKeyResult(action.keyAlias)
-            } else {
-                SecretKeyResult.NoValidKeyResult
-            }}
+        return Observable
+            .create<SecretKeyResult> { emitter ->
+                val hasKey = secretKeyRepository.checkKey(action.keyAlias)
+                if (hasKey) {
+                    emitter.onNextSafe(SecretKeyResult.HasValidKeyResult(action.keyAlias))
+                } else {
+                    emitter.onNextSafe(SecretKeyResult.NoValidKeyResult)
+                }
+                emitter.onCompleteSafe()
+            }
     }
-
 }
 
 class GenerateNewKeyProcessor(
@@ -60,10 +43,10 @@ class GenerateNewKeyProcessor(
 ): MviProcessor<GenerateNewKeyAction, SecretKeyResult> {
 
     override fun process(action: GenerateNewKeyAction): Observable<SecretKeyResult> {
-        return secretKeyRepository.generateKey(action.keyAlias)
-            .toSingleDefault(SecretKeyResult.HasValidKeyResult(action.keyAlias))
-            .toObservable()
-            .cast(SecretKeyResult::class.java)
+        return asObservable {
+            secretKeyRepository.generateKey(action.keyAlias)
+            onNextSafe(SecretKeyResult.HasValidKeyResult(action.keyAlias))
+        }
     }
 }
 
@@ -72,10 +55,10 @@ class RemoveKeyProcessor(
 ): MviProcessor<RemoveKeyAction, SecretKeyResult> {
 
     override fun process(action: RemoveKeyAction): Observable<SecretKeyResult> {
-        return secretKeyRepository.removeKey(action.keyAlias)
-            .toSingleDefault(SecretKeyResult.NoValidKeyResult)
-            .toObservable()
-            .cast(SecretKeyResult::class.java)
+        return asObservable {
+            secretKeyRepository.removeKey(action.keyAlias)
+            onNextSafe(SecretKeyResult.NoValidKeyResult)
+        }
     }
 }
 
@@ -84,10 +67,10 @@ class EncryptMessageProcessor(
 ): MviProcessor<EncryptMessageAction, SecretKeyResult> {
 
     override fun process(action: EncryptMessageAction): Observable<SecretKeyResult> {
-        return secretKeyRepository.encrypt(action.keyAlias, action.messageToEncrypt)
-            .toObservable()
-            .map { messageEncrypted -> SecretKeyResult.EncryptMessageResult(action.keyAlias, messageEncrypted) }
-            .cast(SecretKeyResult::class.java)
+        return asObservable {
+            val messageEncrypted = secretKeyRepository.encrypt(action.keyAlias, action.messageToEncrypt)
+            onNextSafe(SecretKeyResult.EncryptMessageResult(action.keyAlias, messageEncrypted))
+        }
     }
 }
 
@@ -96,16 +79,16 @@ class DecryptMessageProcessor(
 ): MviProcessor<DecryptMessageAction, SecretKeyResult> {
 
     override fun process(action: DecryptMessageAction): Observable<SecretKeyResult> {
-        return secretKeyRepository.decrypt(action.keyAlias, action.messageToDecrypt)
-            .toObservable()
-            .map { messageDecrypted ->
+        return asObservable {
+            val messageDecrypted = secretKeyRepository.decrypt(action.keyAlias, action.messageToDecrypt)
+            onNextSafe(
                 SecretKeyResult.DecryptMessageResult(
                     action.keyAlias,
                     action.messageToDecrypt,
                     messageDecrypted
                 )
-            }
-            .cast(SecretKeyResult::class.java)
+            )
+        }
     }
 }
 

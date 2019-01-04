@@ -1,40 +1,20 @@
 package pl.mobite.sample.security.ui.components.secretkey
 
-import android.os.Parcel
 import android.os.Parcelable
-import pl.mobite.sample.security.data.models.ViewStateError
+import kotlinx.android.parcel.Parcelize
 import pl.mobite.sample.security.ui.base.MviViewState
+import pl.mobite.sample.security.ui.base.ViewStateEvent
 import java.util.concurrent.atomic.AtomicBoolean
 
-
+@Parcelize
 data class SecretKeyViewState(
         val secretKeyAlias: String?,
         val messageEncrypted: String?,
         val messageDecrypted: String?,
         val isLoading: Boolean,
         val clearMessage: AtomicBoolean,
-        val error: ViewStateError?
+        val error: ViewStateEvent<Throwable>?
 ) : Parcelable, MviViewState {
-
-    constructor(source: Parcel) : this(
-            source.readString(),
-            source.readString(),
-            source.readString(),
-            1 == source.readInt(),
-            source.readSerializable() as AtomicBoolean,
-            source.readParcelable<ViewStateError>(ViewStateError::class.java.classLoader)
-    )
-
-    override fun describeContents() = 0
-
-    override fun writeToParcel(dest: Parcel, flags: Int) = with(dest) {
-        writeString(secretKeyAlias)
-        writeString(messageEncrypted)
-        writeString(messageDecrypted)
-        writeInt((if (isLoading) 1 else 0))
-        writeSerializable(clearMessage)
-        writeParcelable(error, 0)
-    }
 
     companion object {
         fun default() = SecretKeyViewState(
@@ -46,17 +26,9 @@ data class SecretKeyViewState(
                 error = null
         )
 
-        @JvmField
-        val CREATOR: Parcelable.Creator<SecretKeyViewState> = object : Parcelable.Creator<SecretKeyViewState> {
-            override fun createFromParcel(source: Parcel): SecretKeyViewState = SecretKeyViewState(source)
-            override fun newArray(size: Int): Array<SecretKeyViewState?> = arrayOfNulls(size)
-        }
-
         val PARCEL_KEY = SecretKeyViewState.toString()
     }
 }
-
-
 
 fun SecretKeyViewState.withKey(secretKeyAlias: String) = this.copy(
     isLoading = false,
@@ -102,5 +74,5 @@ fun SecretKeyViewState.loading() = this.copy(
 
 fun SecretKeyViewState.withError(throwable: Throwable) = this.copy(
     isLoading = false,
-    error = ViewStateError(throwable)
+    error = ViewStateEvent(throwable)
 )
