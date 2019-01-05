@@ -1,4 +1,4 @@
-package pl.mobite.sample.security.ui.base
+package pl.mobite.sample.security.ui.base.mvi
 
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize

@@ -9,6 +9,6 @@ fun assertSecretKeyViewState(expected: SecretKeyViewState, tested: SecretKeyView
     Assert.assertEquals(expected.messageEncrypted, tested.messageEncrypted)
     Assert.assertEquals(expected.messageDecrypted, tested.messageDecrypted)
     Assert.assertEquals(expected.isLoading, tested.isLoading)
-    Assert.assertEquals(expected.clearMessage.get(), tested.clearMessage.get())
+    Assert.assertEquals(expected.clearEvent.get(), tested.clearEvent.get())
     Assert.assertEquals(expected.error?.throwable, tested.error?.throwable)
 }

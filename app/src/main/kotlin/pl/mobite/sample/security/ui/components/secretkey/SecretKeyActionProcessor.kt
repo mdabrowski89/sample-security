@@ -4,7 +4,8 @@ import io.reactivex.Observable
 import io.reactivex.ObservableSource
 import io.reactivex.ObservableTransformer
 import pl.mobite.sample.security.data.repositories.SecretKeyRepository
-import pl.mobite.sample.security.ui.base.MviProcessorRxWrapper
+import pl.mobite.sample.security.ui.base.mvi.MviProcessorImpl
+import pl.mobite.sample.security.ui.base.mvi.onNextSafe
 import pl.mobite.sample.security.ui.components.secretkey.SecretKeyAction.*
 import pl.mobite.sample.security.ui.components.secretkey.SecretKeyResult.ErrorResult
 import pl.mobite.sample.security.ui.components.secretkey.SecretKeyResult.InFlightResult
@@ -29,38 +30,70 @@ class SecretKeyActionProcessor(
         }
     }
 
-    private val checkKeyProcessor = MviProcessorRxWrapper(
-        schedulerProvider,
-        CheckKeyProcessor(secretKeyRepository),
-        InFlightResult
-    ) {ErrorResult(it)}
+    private val checkKeyProcessor =
+        MviProcessorImpl<CheckKeyAction, SecretKeyResult>(
+            schedulerProvider,
+            InFlightResult,
+            { ErrorResult(it) }
+        ) { action ->
+            val hasKey = secretKeyRepository.checkKey(action.keyAlias)
+            if (hasKey) {
+                onNextSafe(SecretKeyResult.HasValidKeyResult(action.keyAlias))
+            } else {
+                onNextSafe(SecretKeyResult.NoValidKeyResult)
+            }
+        }
 
-    private val generateNewKeyProcessor = MviProcessorRxWrapper(
-        schedulerProvider,
-        GenerateNewKeyProcessor(secretKeyRepository),
-        InFlightResult
-    ) {ErrorResult(it)}
+    private val generateNewKeyProcessor =
+        MviProcessorImpl<GenerateNewKeyAction, SecretKeyResult>(
+            schedulerProvider,
+            InFlightResult,
+            { ErrorResult(it) }
+        ) { action ->
+            secretKeyRepository.generateKey(action.keyAlias)
+            onNextSafe(SecretKeyResult.HasValidKeyResult(action.keyAlias))
+        }
 
-    private val removeKeyProcessor = MviProcessorRxWrapper(
-        schedulerProvider,
-        RemoveKeyProcessor(secretKeyRepository),
-        InFlightResult
-    ) {ErrorResult(it)}
+    private val removeKeyProcessor =
+        MviProcessorImpl<RemoveKeyAction, SecretKeyResult>(
+            schedulerProvider,
+            InFlightResult,
+            { ErrorResult(it) }
+        ) { action ->
+            secretKeyRepository.removeKey(action.keyAlias)
+            onNextSafe(SecretKeyResult.NoValidKeyResult)
+        }
 
-    private val encryptMessageProcessor = MviProcessorRxWrapper(
-        schedulerProvider,
-        EncryptMessageProcessor(secretKeyRepository),
-        InFlightResult
-    ) {ErrorResult(it)}
+    private val encryptMessageProcessor =
+        MviProcessorImpl<EncryptMessageAction, SecretKeyResult>(
+            schedulerProvider,
+            InFlightResult,
+            { ErrorResult(it) }
+        ) { action ->
+            val messageEncrypted = secretKeyRepository.encrypt(action.keyAlias, action.messageToEncrypt)
+            onNextSafe(SecretKeyResult.EncryptMessageResult(action.keyAlias, messageEncrypted))
+        }
 
-    private val decryptMessageProcessor = MviProcessorRxWrapper(
-        schedulerProvider,
-        DecryptMessageProcessor(secretKeyRepository),
-        InFlightResult
-    ) {ErrorResult(it)}
+    private val decryptMessageProcessor =
+        MviProcessorImpl<DecryptMessageAction, SecretKeyResult>(
+            schedulerProvider,
+            InFlightResult,
+            { ErrorResult(it) }
+        ) { action ->
+            val messageDecrypted = secretKeyRepository.decrypt(action.keyAlias, action.messageToDecrypt)
+            onNextSafe(
+                SecretKeyResult.DecryptMessageResult(
+                    action.keyAlias,
+                    action.messageToDecrypt,
+                    messageDecrypted
+                )
+            )
+        }
 
-    private val clearMessagesProcessor = MviProcessorRxWrapper(
-        schedulerProvider,
-        ClearMessagesProcessor()
-    )
+    private val clearMessagesProcessor =
+        MviProcessorImpl<ClearMessagesAction, SecretKeyResult>(
+            schedulerProvider
+        ) {
+            onNextSafe(SecretKeyResult.ClearMessagesResult)
+        }
 }

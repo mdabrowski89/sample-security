@@ -12,13 +12,15 @@ import com.jakewharton.rxrelay2.PublishRelay
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.fragment_secret_key.*
 import pl.mobite.sample.security.R
-import pl.mobite.sample.security.ui.base.ViewStateEvent
+import pl.mobite.sample.security.ui.base.mvi.ViewStateEvent
 import pl.mobite.sample.security.ui.custom.CustomTextWatcher
 import pl.mobite.sample.security.utils.SampleSecurityViewModelFactory
 import pl.mobite.sample.security.utils.extensions.setVisibleOrGone
 
 
 class SecretKeyFragment: Fragment() {
+
+    // TODO: create mvi delegate
 
     private val actionsRelay = PublishRelay.create<SecretKeyAction>()
     private lateinit var viewModel: SecretKeyViewModel
@@ -106,7 +108,7 @@ class SecretKeyFragment: Fragment() {
             encryptedMessageText.text = messageEncrypted.orEmpty()
             decryptedMessageText.text = messageDecrypted
 
-            if (clearMessage.getAndSet(false)) {
+            if (clearEvent.isNotConsumed()) {
                 messageInput.text?.clear()
             }
 
