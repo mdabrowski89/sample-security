@@ -8,10 +8,10 @@ class NavItem(val navItemId: Int, val fragmentTag: String, val screenTitleResId:
 
     override fun describeContents() = 0
 
-    constructor(source: Parcel) : this(
-            source.readInt(),
-            source.readString()!!,
-            source.readInt()
+    constructor(source: Parcel): this(
+        source.readInt(),
+        source.readString()!!,
+        source.readInt()
     )
 
     override fun writeToParcel(dest: Parcel, flags: Int) = with(dest) {
@@ -24,7 +24,7 @@ class NavItem(val navItemId: Int, val fragmentTag: String, val screenTitleResId:
         val PARCEL_KEY = NavItem.toString()
 
         @JvmField
-        val CREATOR: Parcelable.Creator<NavItem> = object : Parcelable.Creator<NavItem> {
+        val CREATOR: Parcelable.Creator<NavItem> = object: Parcelable.Creator<NavItem> {
             override fun createFromParcel(source: Parcel): NavItem = NavItem(source)
             override fun newArray(size: Int): Array<NavItem?> = arrayOfNulls(size)
         }

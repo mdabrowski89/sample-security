@@ -27,7 +27,7 @@ class SecretKeyRepositoryImpl: SecretKeyRepository {
 
     override fun decrypt(keyAlias: String, message: String): String {
         // TODO: implement
-       //return "dummy decrypted message"
+        //return "dummy decrypted message"
         throw Throwable("dummy decrypted message")
     }
 

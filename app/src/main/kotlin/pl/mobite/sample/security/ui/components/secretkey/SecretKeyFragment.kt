@@ -7,34 +7,23 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProviders
-import com.jakewharton.rxrelay2.PublishRelay
-import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.fragment_secret_key.*
 import pl.mobite.sample.security.R
+import pl.mobite.sample.security.ui.base.mvi.MviFragmentDelegate
 import pl.mobite.sample.security.ui.base.mvi.ViewStateEvent
+import pl.mobite.sample.security.ui.components.secretkey.mvi.SecretKeyAction
+import pl.mobite.sample.security.ui.components.secretkey.mvi.SecretKeyResult
 import pl.mobite.sample.security.ui.custom.CustomTextWatcher
-import pl.mobite.sample.security.utils.SampleSecurityViewModelFactory
 import pl.mobite.sample.security.utils.extensions.setVisibleOrGone
 
 
 class SecretKeyFragment: Fragment() {
 
-    // TODO: create mvi delegate
-
-    private val actionsRelay = PublishRelay.create<SecretKeyAction>()
-    private lateinit var viewModel: SecretKeyViewModel
-    private var lastViewState: SecretKeyViewState? = null
-
-    private var disposable = CompositeDisposable()
+    private val mviFragmentDelegate = MviFragmentDelegate<SecretKeyAction, SecretKeyResult, SecretKeyViewState>(this, this::render)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val initialViewState: SecretKeyViewState? = savedInstanceState?.getParcelable(SecretKeyViewState.PARCEL_KEY)
-        viewModel = ViewModelProviders.of(this,
-                SampleSecurityViewModelFactory.getInstance(initialViewState))
-                .get(SecretKeyViewModel::class.java)
+        mviFragmentDelegate.onCreate(savedInstanceState, SecretKeyViewModel::class.java)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -44,45 +33,48 @@ class SecretKeyFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        messageInput.addTextChangedListener(object : CustomTextWatcher() {
+        messageInput.addTextChangedListener(object: CustomTextWatcher() {
             override fun afterTextChanged(s: Editable?) {
                 encryptButton.isEnabled = s?.toString()?.isNotBlank() ?: false
             }
         })
 
-        generateKeyButton.setOnClickListener { actionsRelay.accept(SecretKeyAction.GenerateNewKeyAction(KEY_ALIAS)) }
+        generateKeyButton.setOnClickListener { mviFragmentDelegate.accept(SecretKeyAction.GenerateNewKeyAction(KEY_ALIAS)) }
 
-        removeKeyButton.setOnClickListener { actionsRelay.accept(SecretKeyAction.RemoveKeyAction(KEY_ALIAS)) }
+        removeKeyButton.setOnClickListener { mviFragmentDelegate.accept(SecretKeyAction.RemoveKeyAction(KEY_ALIAS)) }
 
-        encryptButton.setOnClickListener { actionsRelay.accept(SecretKeyAction.EncryptMessageAction(KEY_ALIAS, messageInput.text.toString())) }
+        encryptButton.setOnClickListener {
+            mviFragmentDelegate.accept(
+                SecretKeyAction.EncryptMessageAction(
+                    KEY_ALIAS,
+                    messageInput.text.toString()
+                )
+            )
+        }
 
-        decryptButton.setOnClickListener { actionsRelay.accept(SecretKeyAction.DecryptMessageAction(KEY_ALIAS, encryptedMessageText.text.toString() )) }
+        decryptButton.setOnClickListener {
+            mviFragmentDelegate.accept(
+                SecretKeyAction.DecryptMessageAction(
+                    KEY_ALIAS,
+                    encryptedMessageText.text.toString()
+                )
+            )
+        }
 
         clearMessagesButton.setOnClickListener { SecretKeyAction.ClearMessagesAction }
     }
 
     override fun onStart() {
         super.onStart()
-        disposable.add(viewModel.states.subscribe(this::render))
-        viewModel.processActions(actionsRelay)
-
-        actionsRelay.accept(SecretKeyAction.CheckKeyAction(KEY_ALIAS))
-    }
-
-    override fun onStop() {
-        disposable.clear()
-        viewModel.clear()
-        super.onStop()
+        mviFragmentDelegate.accept(SecretKeyAction.CheckKeyAction(KEY_ALIAS))
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putParcelable(SecretKeyViewState.PARCEL_KEY, lastViewState)
+        mviFragmentDelegate.onSaveInstanceState(outState)
     }
 
     private fun render(viewState: SecretKeyViewState) {
-        saveViewState(viewState)
-
         with(viewState) {
             if (error != null) {
                 handleError(error)
@@ -92,7 +84,10 @@ class SecretKeyFragment: Fragment() {
             val hasEncryptedMessage = messageEncrypted != null
             val hasDecryptedMessage = messageDecrypted != null
 
-            keyAliasLabel.text = getString(R.string.label_key_alias, if (hasSecretKey) secretKeyAlias else getString(R.string.label_key_missing))
+            keyAliasLabel.text = getString(
+                R.string.label_key_alias,
+                if (hasSecretKey) secretKeyAlias else getString(R.string.label_key_missing)
+            )
 
             generateKeyButton.setVisibleOrGone(!hasSecretKey)
             removeKeyButton.setVisibleOrGone(hasSecretKey)
@@ -121,12 +116,6 @@ class SecretKeyFragment: Fragment() {
         }
     }
 
-    private fun saveViewState(viewState: SecretKeyViewState) {
-        if (!viewState.isLoading) {
-            lastViewState = viewState
-        }
-    }
-
     private fun handleError(error: ViewStateEvent<Throwable>) {
         if (error.isNotConsumed()) {
             Toast.makeText(activity, R.string.error_message, Toast.LENGTH_SHORT).show()
@@ -134,10 +123,6 @@ class SecretKeyFragment: Fragment() {
     }
 
     companion object {
-
-        fun getInstance(): Fragment {
-            return SecretKeyFragment()
-        }
 
         private const val KEY_ALIAS = "BLOSSOM"
     }

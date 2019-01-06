@@ -36,7 +36,7 @@ class MviProcessorImpl<A: MviAction, R: MviResult>(
     }
 }
 
-fun <A: MviAction, R: MviResult>createMviProcessor(
+fun <A: MviAction, R: MviResult> createMviProcessor(
     doStuff: ObservableEmitter<R>.(action: A) -> Unit
 ): MviProcessor<A, R> {
     return object: MviProcessor<A, R> {
@@ -60,7 +60,7 @@ fun <T> ObservableEmitter<T>.onCompleteSafe() {
     }
 }
 
-fun <T>asObservable(doStuff: ObservableEmitter<T>.() -> Unit): Observable<T> = Observable.create<T> { emitter ->
+fun <T> asObservable(doStuff: ObservableEmitter<T>.() -> Unit): Observable<T> = Observable.create<T> { emitter ->
     emitter.doStuff()
     emitter.onCompleteSafe()
 }

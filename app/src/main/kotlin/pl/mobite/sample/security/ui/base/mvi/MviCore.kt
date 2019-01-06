@@ -1,5 +1,6 @@
 package pl.mobite.sample.security.ui.base.mvi
 
+import android.os.Parcelable
 import io.reactivex.Observable
 
 
@@ -12,7 +13,9 @@ interface MviProcessor<A: MviAction, R: MviResult> {
 
 interface MviResult
 
-interface MviViewState<R: MviResult> {
+interface MviViewState<R: MviResult>: Parcelable {
 
     fun reduce(result: R): MviViewState<R>
+
+    fun isSavable(): Boolean
 }

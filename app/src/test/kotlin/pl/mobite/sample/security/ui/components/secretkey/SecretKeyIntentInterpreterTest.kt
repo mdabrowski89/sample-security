@@ -3,7 +3,7 @@ package pl.mobite.sample.security.ui.components.secretkey
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
-import pl.mobite.sample.security.ui.components.secretkey.SecretKeyAction.*
+import pl.mobite.sample.security.ui.components.secretkey.mvi.SecretKeyAction.*
 import pl.mobite.sample.security.ui.components.secretkey.SecretKeyIntent.*
 
 

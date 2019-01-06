@@ -1,10 +1,10 @@
 package pl.mobite.sample.security.ui.components.secretkey
 
-import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 import pl.mobite.sample.security.ui.base.mvi.MviViewState
 import pl.mobite.sample.security.ui.base.mvi.ViewStateEvent
-import pl.mobite.sample.security.ui.components.secretkey.SecretKeyResult.*
+import pl.mobite.sample.security.ui.components.secretkey.mvi.SecretKeyResult
+import pl.mobite.sample.security.ui.components.secretkey.mvi.SecretKeyResult.*
 
 @Parcelize
 data class SecretKeyViewState(
@@ -14,23 +14,23 @@ data class SecretKeyViewState(
     val isLoading: Boolean,
     val clearEvent: ViewStateEvent<Boolean>,
     val error: ViewStateEvent<Throwable>?
-) : Parcelable, MviViewState<SecretKeyResult> {
+): MviViewState<SecretKeyResult> {
 
     companion object {
         fun default() = SecretKeyViewState(
-                secretKeyAlias = null,
-                messageEncrypted = null,
-                messageDecrypted = null,
-                isLoading = false,
-                clearEvent = ViewStateEvent(false),
-                error = null
+            secretKeyAlias = null,
+            messageEncrypted = null,
+            messageDecrypted = null,
+            isLoading = false,
+            clearEvent = ViewStateEvent(false),
+            error = null
         )
-
-        val PARCEL_KEY = SecretKeyViewState.toString()
     }
 
+    override fun isSavable() = !isLoading
+
     override fun reduce(result: SecretKeyResult): SecretKeyViewState {
-        return when(result) {
+        return when (result) {
             is HasValidKeyResult -> result.reduce()
             is NoValidKeyResult -> result.reduce()
             is EncryptMessageResult -> result.reduce()
