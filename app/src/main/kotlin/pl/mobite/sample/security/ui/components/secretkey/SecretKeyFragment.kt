@@ -9,21 +9,24 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import kotlinx.android.synthetic.main.fragment_secret_key.*
 import pl.mobite.sample.security.R
-import pl.mobite.sample.security.ui.base.mvi.MviFragmentDelegate
+import pl.mobite.sample.security.ui.base.mvi.MviFragmentController
 import pl.mobite.sample.security.ui.base.mvi.ViewStateEvent
 import pl.mobite.sample.security.ui.components.secretkey.mvi.SecretKeyAction
 import pl.mobite.sample.security.ui.components.secretkey.mvi.SecretKeyResult
 import pl.mobite.sample.security.ui.custom.CustomTextWatcher
+import pl.mobite.sample.security.utils.GenericViewModelFactory
 import pl.mobite.sample.security.utils.extensions.setVisibleOrGone
 
 
 class SecretKeyFragment: Fragment() {
 
-    private val mviFragmentDelegate = MviFragmentDelegate<SecretKeyAction, SecretKeyResult, SecretKeyViewState>(this, this::render)
+    private val mviController = MviFragmentController<SecretKeyAction, SecretKeyResult, SecretKeyViewState>(
+        this, this::render
+    ) { SecretKeyAction.CheckKeyAction(KEY_ALIAS) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mviFragmentDelegate.onCreate(savedInstanceState, SecretKeyViewModel::class.java)
+        mviController.onCreate(savedInstanceState, GenericViewModelFactory(), SecretKeyViewModel::class.java)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -39,12 +42,12 @@ class SecretKeyFragment: Fragment() {
             }
         })
 
-        generateKeyButton.setOnClickListener { mviFragmentDelegate.accept(SecretKeyAction.GenerateNewKeyAction(KEY_ALIAS)) }
+        generateKeyButton.setOnClickListener { mviController.accept(SecretKeyAction.GenerateNewKeyAction(KEY_ALIAS)) }
 
-        removeKeyButton.setOnClickListener { mviFragmentDelegate.accept(SecretKeyAction.RemoveKeyAction(KEY_ALIAS)) }
+        removeKeyButton.setOnClickListener { mviController.accept(SecretKeyAction.RemoveKeyAction(KEY_ALIAS)) }
 
         encryptButton.setOnClickListener {
-            mviFragmentDelegate.accept(
+            mviController.accept(
                 SecretKeyAction.EncryptMessageAction(
                     KEY_ALIAS,
                     messageInput.text.toString()
@@ -53,7 +56,7 @@ class SecretKeyFragment: Fragment() {
         }
 
         decryptButton.setOnClickListener {
-            mviFragmentDelegate.accept(
+            mviController.accept(
                 SecretKeyAction.DecryptMessageAction(
                     KEY_ALIAS,
                     encryptedMessageText.text.toString()
@@ -61,17 +64,12 @@ class SecretKeyFragment: Fragment() {
             )
         }
 
-        clearMessagesButton.setOnClickListener { SecretKeyAction.ClearMessagesAction }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        mviFragmentDelegate.accept(SecretKeyAction.CheckKeyAction(KEY_ALIAS))
+        clearMessagesButton.setOnClickListener { mviController.accept(SecretKeyAction.ClearMessagesAction) }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        mviFragmentDelegate.onSaveInstanceState(outState)
+        mviController.onSaveInstanceState(outState)
     }
 
     private fun render(viewState: SecretKeyViewState) {

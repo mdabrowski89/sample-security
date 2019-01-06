@@ -8,28 +8,30 @@ import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ViewModelProviders
 import com.jakewharton.rxrelay2.PublishRelay
 import io.reactivex.disposables.CompositeDisposable
-import pl.mobite.sample.security.utils.SampleSecurityViewModelFactory
 
 
-class MviFragmentDelegate<A: MviAction, R: MviResult, VS: MviViewState<R>>(
+class MviFragmentController<A: MviAction, R: MviResult, VS: MviViewState<R>>(
     private val fragment: Fragment,
-    private val render: (VS) -> Unit
+    private val render: (VS) -> Unit,
+    private val initialAction: (() -> A)? = null
 ): LifecycleObserver {
+
+    var viewState: VS? = null
 
     private lateinit var viewModel: MviViewModel<A, R, VS>
 
     private val actionsRelay = PublishRelay.create<A>()
-    private var lastViewState: VS? = null
     private var disposable = CompositeDisposable()
 
-    private val parcelKey = fragment.javaClass.name
+    private val viewStateParcelKey = fragment.javaClass.name
 
-    fun onCreate(savedInstanceState: Bundle?, modelClass: Class<out MviViewModel<A, R, VS>>) {
-        viewModel = ViewModelProviders.of(
-            fragment,
-            SampleSecurityViewModelFactory.getInstance(savedInstanceState?.getParcelable(parcelKey))
-        ).get(modelClass)
-
+    fun onCreate(
+        savedInstanceState: Bundle?,
+        viewModelFactory: MviViewModelFactory,
+        viewModelClass: Class<out MviViewModel<A, R, VS>>
+    ) {
+        val savedViewState = savedInstanceState?.getParcelable(viewStateParcelKey) as VS
+        viewModel = ViewModelProviders.of(fragment, viewModelFactory.withArgs(savedViewState)).get(viewModelClass)
         fragment.lifecycle.addObserver(this)
     }
 
@@ -38,25 +40,27 @@ class MviFragmentDelegate<A: MviAction, R: MviResult, VS: MviViewState<R>>(
     }
 
     fun onSaveInstanceState(outState: Bundle) {
-        outState.putParcelable(parcelKey, lastViewState)
+        outState.putParcelable(viewStateParcelKey, viewState)
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
-    fun start() {
+    fun onStart() {
         disposable.add(viewModel.states.subscribe(this::render))
         viewModel.processActions(actionsRelay)
+
+        initialAction?.invoke()?.let { action -> accept(action) }
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
-    fun stop() {
+    fun onStop() {
         disposable.clear()
         viewModel.clear()
     }
 
-    private fun render(viewState: VS) {
-        render.invoke(viewState)
-        if (viewState.isSavable()) {
-            lastViewState = viewState
+    private fun render(newViewState: VS) {
+        render.invoke(newViewState)
+        if (newViewState.isSavable()) {
+            this.viewState = newViewState
         }
     }
 }

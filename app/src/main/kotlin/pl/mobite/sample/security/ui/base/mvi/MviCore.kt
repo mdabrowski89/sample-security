@@ -1,15 +1,10 @@
 package pl.mobite.sample.security.ui.base.mvi
 
 import android.os.Parcelable
-import io.reactivex.Observable
+import androidx.lifecycle.ViewModelProvider
 
 
 interface MviAction
-
-interface MviProcessor<A: MviAction, R: MviResult> {
-
-    fun process(action: A): Observable<R>
-}
 
 interface MviResult
 
@@ -18,4 +13,14 @@ interface MviViewState<R: MviResult>: Parcelable {
     fun reduce(result: R): MviViewState<R>
 
     fun isSavable(): Boolean
+}
+
+abstract class MviViewModelFactory: ViewModelProvider.Factory {
+
+    protected lateinit var args: Array<out Any?>
+
+    fun withArgs(vararg args: Any?): MviViewModelFactory {
+        this.args = args
+        return this
+    }
 }

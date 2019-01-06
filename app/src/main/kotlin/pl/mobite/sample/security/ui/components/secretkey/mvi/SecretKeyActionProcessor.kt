@@ -1,10 +1,10 @@
 package pl.mobite.sample.security.ui.components.secretkey.mvi
 
 import io.reactivex.Observable
-import io.reactivex.ObservableSource
-import io.reactivex.ObservableTransformer
+import io.reactivex.ObservableEmitter
 import pl.mobite.sample.security.data.repositories.SecretKeyRepository
-import pl.mobite.sample.security.ui.base.mvi.MviProcessorImpl
+import pl.mobite.sample.security.ui.base.mvi.MviActionsProcessor
+import pl.mobite.sample.security.ui.base.mvi.createActionProcessor
 import pl.mobite.sample.security.ui.base.mvi.onNextSafe
 import pl.mobite.sample.security.ui.components.secretkey.mvi.SecretKeyAction.*
 import pl.mobite.sample.security.ui.components.secretkey.mvi.SecretKeyResult.ErrorResult
@@ -14,30 +14,20 @@ import pl.mobite.sample.security.utils.SchedulerProvider
 
 class SecretKeyActionProcessor(
     secretKeyRepository: SecretKeyRepository,
-    schedulerProvider: SchedulerProvider
-): ObservableTransformer<SecretKeyAction, SecretKeyResult> {
+    private val schedulerProvider: SchedulerProvider
+): MviActionsProcessor<SecretKeyAction, SecretKeyResult>() {
 
-    override fun apply(actions: Observable<SecretKeyAction>): ObservableSource<SecretKeyResult> {
-        return actions.publish { shared ->
-            Observable.merge(
-                listOf(
-                    shared.ofType(CheckKeyAction::class.java).compose(checkKeyProcessor),
-                    shared.ofType(GenerateNewKeyAction::class.java).compose(generateNewKeyProcessor),
-                    shared.ofType(RemoveKeyAction::class.java).compose(removeKeyProcessor),
-                    shared.ofType(EncryptMessageAction::class.java).compose(encryptMessageProcessor),
-                    shared.ofType(DecryptMessageAction::class.java).compose(decryptMessageProcessor),
-                    shared.ofType(ClearMessagesAction::class.java).compose(clearMessagesProcessor)
-                )
-            )
-        }
-    }
+    override fun getActionProcessors(shared: Observable<SecretKeyAction>) = listOf(
+        shared.connect(checkKeyProcessor),
+        shared.connect(generateNewKeyProcessor),
+        shared.connect(removeKeyProcessor),
+        shared.connect(encryptMessageProcessor),
+        shared.connect(decryptMessageProcessor),
+        shared.connect(clearMessagesProcessor)
+    )
 
     private val checkKeyProcessor =
-        MviProcessorImpl<CheckKeyAction, SecretKeyResult>(
-            schedulerProvider,
-            InFlightResult,
-            { ErrorResult(it) }
-        ) { action ->
+        createSecretKeyActionProcessor<CheckKeyAction> { action ->
             val hasKey = secretKeyRepository.checkKey(action.keyAlias)
             if (hasKey) {
                 onNextSafe(SecretKeyResult.HasValidKeyResult(action.keyAlias))
@@ -47,41 +37,25 @@ class SecretKeyActionProcessor(
         }
 
     private val generateNewKeyProcessor =
-        MviProcessorImpl<GenerateNewKeyAction, SecretKeyResult>(
-            schedulerProvider,
-            InFlightResult,
-            { ErrorResult(it) }
-        ) { action ->
+        createSecretKeyActionProcessor<GenerateNewKeyAction> { action ->
             secretKeyRepository.generateKey(action.keyAlias)
             onNextSafe(SecretKeyResult.HasValidKeyResult(action.keyAlias))
         }
 
     private val removeKeyProcessor =
-        MviProcessorImpl<RemoveKeyAction, SecretKeyResult>(
-            schedulerProvider,
-            InFlightResult,
-            { ErrorResult(it) }
-        ) { action ->
+        createSecretKeyActionProcessor<RemoveKeyAction> { action ->
             secretKeyRepository.removeKey(action.keyAlias)
             onNextSafe(SecretKeyResult.NoValidKeyResult)
         }
 
     private val encryptMessageProcessor =
-        MviProcessorImpl<EncryptMessageAction, SecretKeyResult>(
-            schedulerProvider,
-            InFlightResult,
-            { ErrorResult(it) }
-        ) { action ->
+        createSecretKeyActionProcessor<EncryptMessageAction> { action ->
             val messageEncrypted = secretKeyRepository.encrypt(action.keyAlias, action.messageToEncrypt)
             onNextSafe(SecretKeyResult.EncryptMessageResult(action.keyAlias, messageEncrypted))
         }
 
     private val decryptMessageProcessor =
-        MviProcessorImpl<DecryptMessageAction, SecretKeyResult>(
-            schedulerProvider,
-            InFlightResult,
-            { ErrorResult(it) }
-        ) { action ->
+        createSecretKeyActionProcessor<DecryptMessageAction> { action ->
             val messageDecrypted = secretKeyRepository.decrypt(action.keyAlias, action.messageToDecrypt)
             onNextSafe(
                 SecretKeyResult.DecryptMessageResult(
@@ -93,9 +67,18 @@ class SecretKeyActionProcessor(
         }
 
     private val clearMessagesProcessor =
-        MviProcessorImpl<ClearMessagesAction, SecretKeyResult>(
+        createActionProcessor<ClearMessagesAction, SecretKeyResult>(
             schedulerProvider
         ) {
             onNextSafe(SecretKeyResult.ClearMessagesResult)
         }
+
+    private fun <A: SecretKeyAction>createSecretKeyActionProcessor(
+        doStuff: ObservableEmitter<SecretKeyResult>.(action: A) -> Unit
+    ) = createActionProcessor(
+        schedulerProvider,
+        InFlightResult,
+        { ErrorResult(it) },
+        doStuff
+    )
 }

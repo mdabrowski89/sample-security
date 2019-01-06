@@ -9,7 +9,7 @@ import io.reactivex.disposables.Disposable
 
 abstract class MviViewModel<A: MviAction, R: MviResult, VS: MviViewState<R>>(
     processor: ObservableTransformer<A, R>,
-    initialState: VS
+    initialViewState: VS
 ): ViewModel() {
 
     private lateinit var disposable: Disposable
@@ -20,7 +20,7 @@ abstract class MviViewModel<A: MviAction, R: MviResult, VS: MviViewState<R>>(
     val states: Observable<VS> by lazy {
         actionSource
             .compose(processor)
-            .scan<VS>(initialState) { prevState: VS, result -> prevState.reduce(result) as VS }
+            .scan<VS>(initialViewState) { viewState: VS, result -> viewState.reduce(result) as VS }
             .distinctUntilChanged()
             .replay(1)
             .autoConnect(0)
