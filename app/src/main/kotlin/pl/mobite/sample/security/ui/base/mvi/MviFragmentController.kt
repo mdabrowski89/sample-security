@@ -30,7 +30,7 @@ class MviFragmentController<A: MviAction, R: MviResult, VS: MviViewState<R>>(
         viewModelFactory: MviViewModelFactory,
         viewModelClass: Class<out MviViewModel<A, R, VS>>
     ) {
-        val savedViewState = savedInstanceState?.getParcelable(viewStateParcelKey) as VS
+        val savedViewState = savedInstanceState?.getParcelable(viewStateParcelKey) as? VS?
         viewModel = ViewModelProviders.of(fragment, viewModelFactory.withArgs(savedViewState)).get(viewModelClass)
         fragment.lifecycle.addObserver(this)
     }
