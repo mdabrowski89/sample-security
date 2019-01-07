@@ -1,56 +1,93 @@
 package pl.mobite.sample.security.ui.components.secretkey
 
-import android.os.Parcel
-import android.os.Parcelable
-import pl.mobite.sample.security.data.models.ViewStateError
-import java.util.concurrent.atomic.AtomicBoolean
+import kotlinx.android.parcel.Parcelize
+import pl.mobite.sample.security.ui.base.mvi.MviViewState
+import pl.mobite.sample.security.ui.base.mvi.ViewStateEvent
+import pl.mobite.sample.security.ui.components.secretkey.mvi.SecretKeyResult
+import pl.mobite.sample.security.ui.components.secretkey.mvi.SecretKeyResult.*
 
-
+@Parcelize
 data class SecretKeyViewState(
-        val secretKeyAlias: String?,
-        val messageEncrypted: String?,
-        val messageDecrypted: String?,
-        val isLoading: Boolean,
-        val clearMessage: AtomicBoolean,
-        val error: ViewStateError?
-) : Parcelable {
-
-    constructor(source: Parcel) : this(
-            source.readString(),
-            source.readString(),
-            source.readString(),
-            1 == source.readInt(),
-            source.readSerializable() as AtomicBoolean,
-            source.readParcelable<ViewStateError>(ViewStateError::class.java.classLoader)
-    )
-
-    override fun describeContents() = 0
-
-    override fun writeToParcel(dest: Parcel, flags: Int) = with(dest) {
-        writeString(secretKeyAlias)
-        writeString(messageEncrypted)
-        writeString(messageDecrypted)
-        writeInt((if (isLoading) 1 else 0))
-        writeSerializable(clearMessage)
-        writeParcelable(error, 0)
-    }
+    val secretKeyAlias: String?,
+    val messageEncrypted: String?,
+    val messageDecrypted: String?,
+    val isLoading: Boolean,
+    val clearEvent: ViewStateEvent<Boolean>,
+    val error: ViewStateEvent<Throwable>?
+): MviViewState<SecretKeyResult> {
 
     companion object {
         fun default() = SecretKeyViewState(
-                secretKeyAlias = null,
-                messageEncrypted = null,
-                messageDecrypted = null,
-                isLoading = false,
-                clearMessage = AtomicBoolean(),
-                error = null
+            secretKeyAlias = null,
+            messageEncrypted = null,
+            messageDecrypted = null,
+            isLoading = false,
+            clearEvent = ViewStateEvent(false),
+            error = null
         )
-
-        @JvmField
-        val CREATOR: Parcelable.Creator<SecretKeyViewState> = object : Parcelable.Creator<SecretKeyViewState> {
-            override fun createFromParcel(source: Parcel): SecretKeyViewState = SecretKeyViewState(source)
-            override fun newArray(size: Int): Array<SecretKeyViewState?> = arrayOfNulls(size)
-        }
-
-        val PARCEL_KEY = SecretKeyViewState.toString()
     }
+
+    override fun isSavable() = !isLoading
+
+    override fun reduce(result: SecretKeyResult): SecretKeyViewState {
+        return when (result) {
+            is HasValidKeyResult -> result.reduce()
+            is NoValidKeyResult -> result.reduce()
+            is EncryptMessageResult -> result.reduce()
+            is DecryptMessageResult -> result.reduce()
+            is ClearMessagesResult -> result.reduce()
+            is InFlightResult -> result.reduce()
+            is ErrorResult -> result.reduce()
+        }
+    }
+
+    private fun HasValidKeyResult.reduce() = copy(
+        isLoading = false,
+        secretKeyAlias = keyAlias,
+        error = null
+    )
+
+    private fun NoValidKeyResult.reduce() = copy(
+        isLoading = false,
+        secretKeyAlias = null,
+        messageEncrypted = null,
+        messageDecrypted = null,
+        error = null,
+        clearEvent = ViewStateEvent(true)
+    )
+
+    private fun EncryptMessageResult.reduce() = copy(
+        isLoading = false,
+        secretKeyAlias = keyAlias,
+        messageEncrypted = messageEncrypted,
+        messageDecrypted = null,
+        error = null
+    )
+
+    private fun DecryptMessageResult.reduce() = copy(
+        isLoading = false,
+        secretKeyAlias = keyAlias,
+        messageEncrypted = messageEncrypted,
+        messageDecrypted = messageDecrypted,
+        error = null
+    )
+
+    private fun ClearMessagesResult.reduce() = copy(
+        isLoading = false,
+        messageEncrypted = null,
+        messageDecrypted = null,
+        error = null,
+        clearEvent = ViewStateEvent(true)
+    )
+
+    private fun InFlightResult.reduce() = copy(
+        isLoading = true,
+        error = null
+    )
+
+    private fun ErrorResult.reduce() = copy(
+        isLoading = false,
+        error = ViewStateEvent(error)
+    )
 }
+

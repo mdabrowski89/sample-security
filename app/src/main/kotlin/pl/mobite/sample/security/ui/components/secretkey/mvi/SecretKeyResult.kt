@@ -1,7 +1,8 @@
-package pl.mobite.sample.security.ui.components.secretkey
+package pl.mobite.sample.security.ui.components.secretkey.mvi
 
+import pl.mobite.sample.security.ui.base.mvi.MviResult
 
-sealed class SecretKeyResult {
+sealed class SecretKeyResult: MviResult {
 
     data class HasValidKeyResult(val keyAlias: String): SecretKeyResult()
 
@@ -9,7 +10,8 @@ sealed class SecretKeyResult {
 
     data class EncryptMessageResult(val keyAlias: String, val messageEncrypted: String): SecretKeyResult()
 
-    data class DecryptMessageResult(val keyAlias: String, val messageEncrypted: String, val messageDecrypted: String): SecretKeyResult()
+    data class DecryptMessageResult(val keyAlias: String, val messageEncrypted: String, val messageDecrypted: String):
+        SecretKeyResult()
 
     object ClearMessagesResult: SecretKeyResult()
 

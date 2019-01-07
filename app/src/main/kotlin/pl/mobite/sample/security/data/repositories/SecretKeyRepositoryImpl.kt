@@ -1,39 +1,34 @@
 package pl.mobite.sample.security.data.repositories
 
-import io.reactivex.Completable
-import io.reactivex.Single
-import java.util.concurrent.TimeUnit
-
 
 class SecretKeyRepositoryImpl: SecretKeyRepository {
 
     private var hasKey: Boolean = false
 
-    override fun checkKey(keyAlias: String): Single<Boolean> {
+    override fun checkKey(keyAlias: String): Boolean {
         // TODO: implement
-        return Single.just(hasKey)
+        return hasKey
     }
 
-    override fun generateKey(keyAlias: String): Completable {
+    override fun generateKey(keyAlias: String) {
         // TODO: implement
         hasKey = true
-        return Completable.complete()
     }
 
-    override fun removeKey(keyAlias: String): Completable {
+    override fun removeKey(keyAlias: String) {
         // TODO: implement
-        return Completable.complete()
+        hasKey = false
     }
 
-    override fun encrypt(keyAlias: String, message: String): Single<String> {
+    override fun encrypt(keyAlias: String, message: String): String {
         // TODO: implement
-        return Single.just("dummy encrypted message").delay(2, TimeUnit.SECONDS)
+        return "dummy encrypted message"
     }
 
-    override fun decrypt(keyAlias: String, message: String): Single<String> {
+    override fun decrypt(keyAlias: String, message: String): String {
         // TODO: implement
-       //return Single.just("dummy decrypted message")
-        return Single.error(Throwable("dummy decrypted message"))
+        //return "dummy decrypted message"
+        throw Throwable("dummy decrypted message")
     }
 
 }

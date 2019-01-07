@@ -11,7 +11,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main_content.*
 import pl.mobite.sample.security.R
 
-class MainActivity : AppCompatActivity() {
+class MainActivity: AppCompatActivity() {
 
     lateinit var navController: NavController
 
@@ -22,14 +22,20 @@ class MainActivity : AppCompatActivity() {
 
         navController = findNavController(mainNavHostFragment)
 
-        ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.main_nav_drawer_open_desc, R.string.main_nav_drawer_close_desc)
-                .apply {
-                    drawerLayout.addDrawerListener(this)
-                    syncState()
-                }
+        ActionBarDrawerToggle(
+            this,
+            drawerLayout,
+            toolbar,
+            R.string.main_nav_drawer_open_desc,
+            R.string.main_nav_drawer_close_desc
+        )
+            .apply {
+                drawerLayout.addDrawerListener(this)
+                syncState()
+            }
         NavigationUI.setupWithNavController(navigationView, navController)
     }
-    
+
     override fun onSupportNavigateUp() = navController.navigateUp()
 
     override fun onBackPressed() {

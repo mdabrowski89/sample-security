@@ -228,7 +228,7 @@ class SecretKeyViewModelTest {
         val viewModel = SecretKeyViewModel(secretKeyRepositoryMock, ImmediateSchedulerProvider.instance, initialState)
         val testObserver = viewModel.states().test()
 
-        viewModel.processIntents(Observable.fromIterable(intents))
+        viewModel.processActions(Observable.fromIterable(intents))
 
         testObserver.assertValueCount(expectedStates.size)
 

@@ -12,7 +12,8 @@ class SecurityApp: Application() {
 
     companion object {
 
-        @JvmStatic lateinit var instance: SecurityApp
+        @JvmStatic
+        lateinit var instance: SecurityApp
             private set
     }
 }

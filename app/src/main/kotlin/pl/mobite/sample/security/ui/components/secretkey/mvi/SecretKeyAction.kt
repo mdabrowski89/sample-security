@@ -1,7 +1,8 @@
-package pl.mobite.sample.security.ui.components.secretkey
+package pl.mobite.sample.security.ui.components.secretkey.mvi
 
+import pl.mobite.sample.security.ui.base.mvi.MviAction
 
-sealed class SecretKeyAction {
+sealed class SecretKeyAction: MviAction {
 
     data class CheckKeyAction(val keyAlias: String): SecretKeyAction()
 

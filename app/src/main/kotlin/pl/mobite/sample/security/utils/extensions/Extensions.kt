@@ -1,4 +1,4 @@
-package pl.mobite.sample.security.utils
+package pl.mobite.sample.security.utils.extensions
 
 import android.view.View
 import io.reactivex.Observable
