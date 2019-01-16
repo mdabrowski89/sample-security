@@ -1,4 +1,4 @@
-package pl.mobite.sample.security.utils
+package pl.mobite.sample.security.ui.base.mvi
 
 import io.reactivex.Scheduler
 

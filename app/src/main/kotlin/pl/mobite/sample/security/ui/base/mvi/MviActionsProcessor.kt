@@ -4,7 +4,6 @@ import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import io.reactivex.ObservableSource
 import io.reactivex.ObservableTransformer
-import pl.mobite.sample.security.utils.SchedulerProvider
 
 
 abstract class MviActionsProcessor<A: MviAction, R: MviResult>: ObservableTransformer<A, R> {
@@ -30,22 +29,23 @@ fun <A: MviAction, R: MviResult>createActionProcessor(
     onErrorResult: ((t: Throwable) -> R)? = null,
     doStuff: ObservableEmitter<R>.(action: A) -> Unit
 ) = ObservableTransformer<A, R> { actions ->
-    var observable = actions
-        .switchMap { action -> asObservable<R> { doStuff(action) } }
+    actions
+        .switchMap { action ->
+            var observable = asObservable<R> {
+                doStuff(action)
+            }
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
 
-    if (onErrorResult != null) {
-        observable = observable.onErrorReturn { t -> onErrorResult.invoke(t) }
-    }
+            if (onErrorResult != null) {
+                observable = observable.onErrorReturn { t -> onErrorResult.invoke(t) }
+            }
 
-    observable = observable
-        .subscribeOn(schedulerProvider.io())
-        .observeOn(schedulerProvider.ui())
-
-    if (initialResult != null) {
-        observable = observable.startWith(initialResult)
-    }
-
-    observable
+            if (initialResult != null) {
+                observable = observable.startWith(initialResult)
+            }
+            observable
+        }
 }
 
 fun <T> asObservable(doStuff: ObservableEmitter<T>.() -> Unit): Observable<T> = Observable.create<T> { emitter ->

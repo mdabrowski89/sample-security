@@ -2,6 +2,7 @@ package pl.mobite.sample.security.utils
 
 import io.reactivex.Scheduler
 import io.reactivex.schedulers.Schedulers
+import pl.mobite.sample.security.ui.base.mvi.SchedulerProvider
 
 
 class ImmediateSchedulerProvider private constructor(): SchedulerProvider {

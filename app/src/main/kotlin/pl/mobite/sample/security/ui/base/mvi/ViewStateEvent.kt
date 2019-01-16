@@ -13,4 +13,16 @@ data class ViewStateEvent<T: Serializable>(
 ): Parcelable {
 
     fun isNotConsumed(setAsConsumed: Boolean = true) = !isConsumed.getAndSet(setAsConsumed)
+
+    fun handle(function: (T) -> Unit) {
+        if (isNotConsumed(false)) {
+            function.invoke(payload)
+        }
+    }
+
+    fun consume(function: (T) -> Unit) {
+        if (isNotConsumed()) {
+            function.invoke(payload)
+        }
+    }
 }

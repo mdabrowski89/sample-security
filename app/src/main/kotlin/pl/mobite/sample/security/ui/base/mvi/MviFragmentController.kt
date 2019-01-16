@@ -13,7 +13,7 @@ import io.reactivex.disposables.CompositeDisposable
 class MviFragmentController<A: MviAction, R: MviResult, VS: MviViewState<R>>(
     private val fragment: Fragment,
     private val render: (VS) -> Unit,
-    private val initialAction: (() -> A)? = null
+    private val initialAction: ((VS?) -> A?)? = null
 ): LifecycleObserver {
 
     var viewState: VS? = null
@@ -48,7 +48,7 @@ class MviFragmentController<A: MviAction, R: MviResult, VS: MviViewState<R>>(
         disposable.add(viewModel.states.subscribe(this::render))
         viewModel.processActions(actionsRelay)
 
-        initialAction?.invoke()?.let { action -> accept(action) }
+        initialAction?.invoke(viewState)?.let { action -> accept(action) }
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)

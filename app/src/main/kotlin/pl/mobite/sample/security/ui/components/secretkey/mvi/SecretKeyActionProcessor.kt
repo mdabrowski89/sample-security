@@ -4,12 +4,12 @@ import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import pl.mobite.sample.security.data.repositories.SecretKeyRepository
 import pl.mobite.sample.security.ui.base.mvi.MviActionsProcessor
+import pl.mobite.sample.security.ui.base.mvi.SchedulerProvider
 import pl.mobite.sample.security.ui.base.mvi.createActionProcessor
 import pl.mobite.sample.security.ui.base.mvi.onNextSafe
 import pl.mobite.sample.security.ui.components.secretkey.mvi.SecretKeyAction.*
 import pl.mobite.sample.security.ui.components.secretkey.mvi.SecretKeyResult.ErrorResult
 import pl.mobite.sample.security.ui.components.secretkey.mvi.SecretKeyResult.InFlightResult
-import pl.mobite.sample.security.utils.SchedulerProvider
 
 
 class SecretKeyActionProcessor(

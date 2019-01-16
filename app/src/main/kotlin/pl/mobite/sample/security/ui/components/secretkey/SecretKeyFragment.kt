@@ -6,28 +6,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.fragment.app.Fragment
 import kotlinx.android.synthetic.main.fragment_secret_key.*
 import pl.mobite.sample.security.R
-import pl.mobite.sample.security.ui.base.mvi.MviFragmentController
-import pl.mobite.sample.security.ui.base.mvi.ViewStateEvent
+import pl.mobite.sample.security.ui.base.MviBaseFragment
 import pl.mobite.sample.security.ui.components.secretkey.mvi.SecretKeyAction
 import pl.mobite.sample.security.ui.components.secretkey.mvi.SecretKeyResult
 import pl.mobite.sample.security.ui.custom.CustomTextWatcher
-import pl.mobite.sample.security.utils.GenericViewModelFactory
 import pl.mobite.sample.security.utils.extensions.setVisibleOrGone
 
 
-class SecretKeyFragment: Fragment() {
-
-    private val mviController = MviFragmentController<SecretKeyAction, SecretKeyResult, SecretKeyViewState>(
-        this, this::render
-    ) { SecretKeyAction.CheckKeyAction(KEY_ALIAS) }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        mviController.onCreate(savedInstanceState, GenericViewModelFactory(), SecretKeyViewModel::class.java)
-    }
+class SecretKeyFragment: MviBaseFragment<SecretKeyAction, SecretKeyResult, SecretKeyViewState, SecretKeyViewModel>(SecretKeyViewModel::class.java) {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_secret_key, container, false)
@@ -47,35 +35,24 @@ class SecretKeyFragment: Fragment() {
         removeKeyButton.setOnClickListener { mviController.accept(SecretKeyAction.RemoveKeyAction(KEY_ALIAS)) }
 
         encryptButton.setOnClickListener {
-            mviController.accept(
-                SecretKeyAction.EncryptMessageAction(
-                    KEY_ALIAS,
-                    messageInput.text.toString()
-                )
-            )
+            mviController.accept(SecretKeyAction.EncryptMessageAction(KEY_ALIAS, messageInput.text.toString()))
         }
 
         decryptButton.setOnClickListener {
-            mviController.accept(
-                SecretKeyAction.DecryptMessageAction(
-                    KEY_ALIAS,
-                    encryptedMessageText.text.toString()
-                )
-            )
+            mviController.accept(SecretKeyAction.DecryptMessageAction(KEY_ALIAS, encryptedMessageText.text.toString()))
         }
 
         clearMessagesButton.setOnClickListener { mviController.accept(SecretKeyAction.ClearMessagesAction) }
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        mviController.onSaveInstanceState(outState)
+    override fun initialAction(state: SecretKeyViewState?): SecretKeyAction? {
+        return SecretKeyAction.CheckKeyAction(KEY_ALIAS)
     }
 
-    private fun render(viewState: SecretKeyViewState) {
-        with(viewState) {
-            if (error != null) {
-                handleError(error)
+    override fun render(state: SecretKeyViewState) {
+        with(state) {
+            errorEvent?.consume {
+                Toast.makeText(activity, R.string.error_message, Toast.LENGTH_SHORT).show()
             }
 
             val hasSecretKey = secretKeyAlias != null
@@ -101,7 +78,7 @@ class SecretKeyFragment: Fragment() {
             encryptedMessageText.text = messageEncrypted.orEmpty()
             decryptedMessageText.text = messageDecrypted
 
-            if (clearEvent.isNotConsumed()) {
+            clearEvent.consume {
                 messageInput.text?.clear()
             }
 
@@ -111,12 +88,6 @@ class SecretKeyFragment: Fragment() {
             messageInput.isEnabled = !isLoading
             encryptButton.isEnabled = !isLoading && messageInput.text?.isNotBlank() ?: false
             decryptButton.isEnabled = !isLoading
-        }
-    }
-
-    private fun handleError(error: ViewStateEvent<Throwable>) {
-        if (error.isNotConsumed()) {
-            Toast.makeText(activity, R.string.error_message, Toast.LENGTH_SHORT).show()
         }
     }
 

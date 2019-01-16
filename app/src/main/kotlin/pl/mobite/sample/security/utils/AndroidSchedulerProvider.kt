@@ -3,6 +3,7 @@ package pl.mobite.sample.security.utils
 import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import pl.mobite.sample.security.ui.base.mvi.SchedulerProvider
 
 
 class AndroidSchedulerProvider private constructor(): SchedulerProvider {

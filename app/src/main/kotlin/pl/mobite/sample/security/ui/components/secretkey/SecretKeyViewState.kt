@@ -13,7 +13,7 @@ data class SecretKeyViewState(
     val messageDecrypted: String?,
     val isLoading: Boolean,
     val clearEvent: ViewStateEvent<Boolean>,
-    val error: ViewStateEvent<Throwable>?
+    val errorEvent: ViewStateEvent<Throwable>?
 ): MviViewState<SecretKeyResult> {
 
     companion object {
@@ -23,7 +23,7 @@ data class SecretKeyViewState(
             messageDecrypted = null,
             isLoading = false,
             clearEvent = ViewStateEvent(false),
-            error = null
+            errorEvent = null
         )
     }
 
@@ -44,7 +44,7 @@ data class SecretKeyViewState(
     private fun HasValidKeyResult.reduce() = copy(
         isLoading = false,
         secretKeyAlias = keyAlias,
-        error = null
+        errorEvent = null
     )
 
     private fun NoValidKeyResult.reduce() = copy(
@@ -52,7 +52,7 @@ data class SecretKeyViewState(
         secretKeyAlias = null,
         messageEncrypted = null,
         messageDecrypted = null,
-        error = null,
+        errorEvent = null,
         clearEvent = ViewStateEvent(true)
     )
 
@@ -61,7 +61,7 @@ data class SecretKeyViewState(
         secretKeyAlias = keyAlias,
         messageEncrypted = messageEncrypted,
         messageDecrypted = null,
-        error = null
+        errorEvent = null
     )
 
     private fun DecryptMessageResult.reduce() = copy(
@@ -69,25 +69,25 @@ data class SecretKeyViewState(
         secretKeyAlias = keyAlias,
         messageEncrypted = messageEncrypted,
         messageDecrypted = messageDecrypted,
-        error = null
+        errorEvent = null
     )
 
     private fun ClearMessagesResult.reduce() = copy(
         isLoading = false,
         messageEncrypted = null,
         messageDecrypted = null,
-        error = null,
+        errorEvent = null,
         clearEvent = ViewStateEvent(true)
     )
 
     private fun InFlightResult.reduce() = copy(
         isLoading = true,
-        error = null
+        errorEvent = null
     )
 
     private fun ErrorResult.reduce() = copy(
         isLoading = false,
-        error = ViewStateEvent(error)
+        errorEvent = ViewStateEvent(error)
     )
 }
 
