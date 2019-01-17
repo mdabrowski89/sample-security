@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import androidx.annotation.IdRes
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.NavOptions
 import androidx.navigation.Navigator
@@ -29,12 +28,11 @@ class CustomFragmentNavigator(
             return
         }
 
-        val fragmentClass = destination.fragmentClass
-        val tag = fragmentClass.name
+        val tag = destination.fragmentClass.name
         val oldFragmentInstance = mFragmentManager.findFragmentByTag(tag)
-        val fragment = oldFragmentInstance ?: createNewFragmentInstance(fragmentClass, args)
-        val ft = mFragmentManager.beginTransaction()
+        val fragment = oldFragmentInstance ?: destination.createFragment(args)
 
+        val ft = mFragmentManager.beginTransaction()
         var enterAnim = navOptions?.enterAnim ?: -1
         var exitAnim = navOptions?.exitAnim ?: -1
         var popEnterAnim = navOptions?.popEnterAnim ?: -1
@@ -92,19 +90,5 @@ class CustomFragmentNavigator(
             mBackStack.add(destId)
         }
         dispatchOnNavigatorNavigated(destId, backStackEffect)
-    }
-
-    private fun createNewFragmentInstance(fragmentClass: Class<out Fragment>, args: Bundle?): Fragment {
-        val f: Fragment
-        try {
-            f = fragmentClass.newInstance()
-        } catch (e: Exception) {
-            throw RuntimeException(e)
-        }
-
-        if (args != null) {
-            f.arguments = args
-        }
-        return f
     }
 }
