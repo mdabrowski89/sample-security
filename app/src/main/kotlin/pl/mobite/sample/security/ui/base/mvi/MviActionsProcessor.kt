@@ -25,7 +25,7 @@ abstract class MviActionsProcessor<A: MviAction, R: MviResult>: ObservableTransf
 
 fun <A: MviAction, R: MviResult>createActionProcessor(
     schedulerProvider: SchedulerProvider,
-    initialResult: R? = null,
+    initialResult: ((a: A) -> R?)? = null,
     onErrorResult: ((t: Throwable) -> R)? = null,
     doStuff: ObservableEmitter<R>.(action: A) -> Unit
 ) = ObservableTransformer<A, R> { actions ->
@@ -42,7 +42,7 @@ fun <A: MviAction, R: MviResult>createActionProcessor(
             }
 
             if (initialResult != null) {
-                observable = observable.startWith(initialResult)
+                observable = observable.startWith(initialResult.invoke(action))
             }
             observable
         }

@@ -15,7 +15,9 @@ object Versions {
     const val androidxLegacySupport = "1.0.0"
     const val androidxRoom = "2.1.0-alpha03"
     const val androidxLifecycle = "2.0.0"
+    const val androidxMaterial = "1.0.0-rc01"
 
+    const val playServiceMaps = "15.0.1"
     const val playServices = "16.0.0"
 
     const val archNavigation = "1.0.0-alpha07"
@@ -32,32 +34,37 @@ object Versions {
 
     const val gson = "2.8.2"
 
+    const val koin = "1.0.2"
     const val dagger = "2.16"
+
+    const val mapsUtils = "0.5+"
 
     const val picasso = "2.71828"
     const val glide = "4.8.0"
+
+    const val flexBox = "1.1.0"
+    const val discreteScrollView = "1.4.9"
 
     const val permissionDispatcher = "3.3.1"
 
     const val intercom = "5.1.6"
 
-    const val crashlitics = "2.9.5@aar"
-
     const val fotoApparat = "2.6.1"
-
     const val qrCodeReader = "2.0.3"
-
     const val microblink = "4.4.0@aar"
+
+    const val branch = "3.+"
+
+    const val multidex = "1.0.3"
+
+    const val crashlytics = "2.9.7@aar"
 
     // test
     const val junit = "4.12"
     const val test = "1.1.0"
     const val espresso = "3.1.0"
-
-    // not used
-    const val androidxMaterial = "1.0.0-rc01"
     const val mockito = "2.8.9"
-    const val powerMock = "1.7.0"
+    const val powerMock = "2.0.0"
     const val supportTest = "1.0.2"
 }
 
@@ -85,6 +92,7 @@ object Dependencies {
     const val androidxLifecycleRuntimeLib = "androidx.lifecycle:lifecycle-runtime:${Versions.androidxLifecycle}"
     const val androidxLifecycleCompiler = "androidx.lifecycle:lifecycle-compiler:${Versions.androidxLifecycle}"
 
+    const val playServiceMapsLib = "com.google.android.gms:play-services-maps:${Versions.playServiceMaps}"
     const val playServicesLocation = "com.google.android.gms:play-services-location:${Versions.playServices}"
 
     const val archNavigationFragmentLib = "android.arch.navigation:navigation-fragment:${Versions.archNavigation}"
@@ -106,11 +114,19 @@ object Dependencies {
 
     const val gsonLib = "com.google.code.gson:gson:${Versions.gson}"
 
+    const val koinLib = "org.koin:koin-android:${Versions.koin}"
+    const val koinScopeLib = "org.koin:koin-androidx-scope:${Versions.koin}"
+    const val koinViewModelLib = "org.koin:koin-androidx-viewmodel:${Versions.koin}"
+    const val koinTestLib = "org.koin:koin-test:${Versions.koin}"
+
     const val daggerLib = "com.google.dagger:dagger:${Versions.dagger}"
     const val daggerAndroidLib = "com.google.dagger:dagger-android-support:${Versions.dagger}"
     const val daggerCompiler = "com.google.dagger:dagger-compiler:${Versions.dagger}"
     const val daggerAndroidProcessor = "com.google.dagger:dagger-android-processor:${Versions.dagger}"
 
+    const val mapsUtilsLib = "com.google.maps.android:android-maps-utils:${Versions.mapsUtils}"
+
+    const val flexBoxLib = "com.google.android:flexbox:${Versions.flexBox}"
     const val picassoLib = "com.squareup.picasso:picasso:${Versions.picasso}"
 
     const val glideLib = "com.github.bumptech.glide:glide:${Versions.glide}"
@@ -124,13 +140,19 @@ object Dependencies {
 
     const val intercomLib = "io.intercom.android:intercom-sdk-base:${Versions.intercom}"
 
-    const val crashliticsLib = "com.crashlytics.sdk.android:crashlytics:${Versions.crashlitics}"
-
     const val fotoApparatLib = "io.fotoapparat:fotoapparat:${Versions.fotoApparat}"
 
     const val qrCodeReaderLib = "com.dlazaro66.qrcodereaderview:qrcodereaderview:${Versions.qrCodeReader}"
 
     const val microblinkLib = "com.microblink:blinkid:${Versions.microblink}"
+
+    const val branchLib = "io.branch.sdk.android:library:${Versions.branch}"
+
+    const val multidexLib = "com.android.support:multidex:${Versions.multidex}"
+
+    const val discreteScrollViewLib = "com.yarolegovich:discrete-scrollview:${Versions.discreteScrollView}"
+
+    const val crashlyticsLib = "com.crashlytics.sdk.android:crashlytics:${Versions.crashlytics}"
 
     // test
     const val junitLib = "junit:junit:${Versions.junit}"

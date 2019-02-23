@@ -2,7 +2,6 @@ package pl.mobite.sample.security.ui.base
 
 import android.os.Bundle
 import pl.mobite.sample.security.ui.base.mvi.*
-import pl.mobite.sample.security.utils.GenericViewModelFactory
 
 abstract class MviBaseFragment<
         ActionType: MviAction,
@@ -16,7 +15,7 @@ abstract class MviBaseFragment<
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mviController.onCreate(savedInstanceState, GenericViewModelFactory(), modelClass)
+        mviController.onCreate(savedInstanceState, modelClass)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

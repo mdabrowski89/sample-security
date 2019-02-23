@@ -27,11 +27,11 @@ class MviFragmentController<A: MviAction, R: MviResult, VS: MviViewState<R>>(
 
     fun onCreate(
         savedInstanceState: Bundle?,
-        viewModelFactory: MviViewModelFactory,
         viewModelClass: Class<out MviViewModel<A, R, VS>>
     ) {
         val savedViewState = savedInstanceState?.getParcelable(viewStateParcelKey) as? VS?
-        viewModel = ViewModelProviders.of(fragment, viewModelFactory.withArgs(savedViewState)).get(viewModelClass)
+        viewModel = ViewModelProviders.of(fragment).get(viewModelClass)
+        viewModel.initStates(savedViewState)
         fragment.lifecycle.addObserver(this)
     }
 
@@ -45,7 +45,7 @@ class MviFragmentController<A: MviAction, R: MviResult, VS: MviViewState<R>>(
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     fun onStart() {
-        disposable.add(viewModel.states.subscribe(this::render))
+        viewModel.states?.subscribe(this::render)?.let { disposable.add(it) }
         viewModel.processActions(actionsRelay)
 
         initialAction?.invoke(viewState)?.let { action -> accept(action) }

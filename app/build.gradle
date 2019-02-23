@@ -66,6 +66,8 @@ dependencies {
     implementation Dependencies.archNavigationFragmentLib
     implementation Dependencies.archNavigationUiLib
 
+    implementation Dependencies.koinLib
+    
     implementation Dependencies.rxAndroidLib
     implementation Dependencies.rxKotlinLib
     implementation Dependencies.rxRelayLib

@@ -2,6 +2,8 @@ package pl.mobite.sample.security.ui.components.secretkey.mvi
 
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
+import org.koin.standalone.KoinComponent
+import org.koin.standalone.inject
 import pl.mobite.sample.security.data.repositories.SecretKeyRepository
 import pl.mobite.sample.security.ui.base.mvi.MviActionsProcessor
 import pl.mobite.sample.security.ui.base.mvi.SchedulerProvider
@@ -12,10 +14,11 @@ import pl.mobite.sample.security.ui.components.secretkey.mvi.SecretKeyResult.Err
 import pl.mobite.sample.security.ui.components.secretkey.mvi.SecretKeyResult.InFlightResult
 
 
-class SecretKeyActionProcessor(
-    secretKeyRepository: SecretKeyRepository,
-    private val schedulerProvider: SchedulerProvider
-): MviActionsProcessor<SecretKeyAction, SecretKeyResult>() {
+class SecretKeyActionProcessor: MviActionsProcessor<SecretKeyAction, SecretKeyResult>(), KoinComponent {
+
+
+    private val secretKeyRepository: SecretKeyRepository by inject()
+    private val schedulerProvider: SchedulerProvider by inject()
 
     override fun getActionProcessors(shared: Observable<SecretKeyAction>) = listOf(
         shared.connect(checkKeyProcessor),
@@ -77,7 +80,7 @@ class SecretKeyActionProcessor(
         doStuff: ObservableEmitter<SecretKeyResult>.(action: A) -> Unit
     ) = createActionProcessor(
         schedulerProvider,
-        InFlightResult,
+        { InFlightResult },
         { ErrorResult(it) },
         doStuff
     )

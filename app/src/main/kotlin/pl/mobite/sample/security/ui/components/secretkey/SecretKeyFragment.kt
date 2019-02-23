@@ -12,7 +12,7 @@ import pl.mobite.sample.security.ui.base.MviBaseFragment
 import pl.mobite.sample.security.ui.components.secretkey.mvi.SecretKeyAction
 import pl.mobite.sample.security.ui.components.secretkey.mvi.SecretKeyResult
 import pl.mobite.sample.security.ui.custom.CustomTextWatcher
-import pl.mobite.sample.security.utils.extensions.setVisibleOrGone
+import pl.mobite.sample.security.utils.setVisibleOrGone
 
 
 class SecretKeyFragment: MviBaseFragment<SecretKeyAction, SecretKeyResult, SecretKeyViewState, SecretKeyViewModel>(SecretKeyViewModel::class.java) {
