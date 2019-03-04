@@ -1,17 +1,16 @@
 package pl.mobite.sample.security.ui.base
 
 import android.os.Bundle
-import android.view.View
 import androidx.lifecycle.ViewModelProviders
 import pl.mobite.sample.security.ui.base.mvi.*
 
-abstract class MviBaseFragment<
+abstract class MviBaseActivity<
         ActionType: MviAction,
         ResultType: MviResult,
         ViewStateType: MviViewState<ResultType>,
         ViewModelType: MviViewModel<ActionType, ResultType, ViewStateType>>(
     private val viewModelClass: Class<ViewModelType>
-): BaseFragment() {
+): BaseActivity() {
 
     protected val mviController by lazy {
         MviController(
@@ -27,22 +26,7 @@ abstract class MviBaseFragment<
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mviController.initViewModel(viewModelClass)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        mviController.initViewStatesObservable(savedInstanceState, alwaysInitWithSavedViewState())
-    }
-
-    override fun onDestroyView() {
-        /**
-         * Fragment view can be destroyed an recreated without destroying the whole fragment
-         * so we need to additionally update state here
-         */
-        with(mviController) {
-            viewState = updateViewStateBeforeSave(viewState)
-        }
-        super.onDestroyView()
+        mviController.initViewStatesObservable(savedInstanceState, forceInitWithLastViewState())
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -61,15 +45,12 @@ abstract class MviBaseFragment<
     abstract fun render(viewState: ViewStateType)
 
     /**
-     * Update the last rendered view state before:
-     * 1. it will be saved to outBundle in onSaveInstanceState() method
-     * 2. the view will be destroyed in onDestroyView() method
+     * Update the last rendered view state before it will be saved to outBundle in onSaveInstanceState() method
      */
     open fun updateViewStateBeforeSave(viewState: ViewStateType?): ViewStateType? = viewState
 
     /**
-     * When fragment view is recreated use saved view state instead of re emitting the last one
+     * When activity is recreated use saved view state instead of re emitting the last one
      */
-    open fun alwaysInitWithSavedViewState() = false
-
+    open fun forceInitWithLastViewState() = false
 }

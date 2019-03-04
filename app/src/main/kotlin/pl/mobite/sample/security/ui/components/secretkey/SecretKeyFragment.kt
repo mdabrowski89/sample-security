@@ -15,7 +15,9 @@ import pl.mobite.sample.security.ui.custom.CustomTextWatcher
 import pl.mobite.sample.security.utils.setVisibleOrGone
 
 
-class SecretKeyFragment: MviBaseFragment<SecretKeyAction, SecretKeyResult, SecretKeyViewState, SecretKeyViewModel>(SecretKeyViewModel::class.java) {
+class SecretKeyFragment: MviBaseFragment<SecretKeyAction, SecretKeyResult, SecretKeyViewState, SecretKeyViewModel>(
+    SecretKeyViewModel::class.java
+) {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_secret_key, container, false)
@@ -45,12 +47,12 @@ class SecretKeyFragment: MviBaseFragment<SecretKeyAction, SecretKeyResult, Secre
         clearMessagesButton.setOnClickListener { mviController.accept(SecretKeyAction.ClearMessagesAction) }
     }
 
-    override fun initialAction(state: SecretKeyViewState?): SecretKeyAction? {
+    override fun initialAction(lastViewState: SecretKeyViewState?): SecretKeyAction? {
         return SecretKeyAction.CheckKeyAction(KEY_ALIAS)
     }
 
-    override fun render(state: SecretKeyViewState) {
-        with(state) {
+    override fun render(viewState: SecretKeyViewState) {
+        with(viewState) {
             errorEvent?.consume {
                 Toast.makeText(activity, R.string.error_message, Toast.LENGTH_SHORT).show()
             }
@@ -78,7 +80,7 @@ class SecretKeyFragment: MviBaseFragment<SecretKeyAction, SecretKeyResult, Secre
             encryptedMessageText.text = messageEncrypted.orEmpty()
             decryptedMessageText.text = messageDecrypted
 
-            clearEvent.consume {
+            clearEvent?.consume {
                 messageInput.text?.clear()
             }
 

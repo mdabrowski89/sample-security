@@ -8,21 +8,23 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 @Parcelize
 data class ViewStateEvent<T: Serializable>(
-    val payload: T,
+    val payload: T? = null,
     val isConsumed: AtomicBoolean = AtomicBoolean(false)
 ): Parcelable {
 
-    fun isNotConsumed(setAsConsumed: Boolean = true) = !isConsumed.getAndSet(setAsConsumed)
+    private fun isConsumed(setAsConsumed: Boolean = false) = isConsumed.getAndSet(setAsConsumed)
 
-    fun handle(function: (T) -> Unit) {
-        if (isNotConsumed(false)) {
-            function.invoke(payload)
+    fun handle(action: (T?) -> Unit) {
+        if (!isConsumed()) {
+            action(payload)
         }
     }
 
-    fun consume(function: (T) -> Unit) {
-        if (isNotConsumed()) {
-            function.invoke(payload)
+    fun consume(action: (T?) -> Unit) {
+        if (!isConsumed(true)) {
+            action(payload)
         }
     }
 }
+
+typealias ViewStateEmptyEvent = ViewStateEvent<Serializable>

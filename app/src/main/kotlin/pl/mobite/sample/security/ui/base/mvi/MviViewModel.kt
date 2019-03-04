@@ -8,7 +8,7 @@ import io.reactivex.disposables.CompositeDisposable
 
 
 abstract class MviViewModel<A: MviAction, R: MviResult, VS: MviViewState<R>>(
-    private val processor: ObservableTransformer<A, R>,
+    private val actionProcessor: ObservableTransformer<A, R>,
     private val defaultViewState: VS
 ): ViewModel() {
 
@@ -16,14 +16,14 @@ abstract class MviViewModel<A: MviAction, R: MviResult, VS: MviViewState<R>>(
 
     private val actionSource = PublishRelay.create<A>()
 
-    var states: Observable<VS>? = null
+    private var viewStatesObservable: Observable<VS>? = null
 
     @Suppress("UNCHECKED_CAST")
-    fun initStates(savedViewState: VS?) {
-        if (states == null || useSavedStateOnFragmentRecreation()) {
+    fun initViewStatesObservable(savedViewState: VS?, alwaysInitWithSavedViewState: Boolean) {
+        if (viewStatesObservable == null || alwaysInitWithSavedViewState) {
             disposables.clear()
-            states = actionSource
-                .compose(processor)
+            viewStatesObservable = actionSource
+                .compose(actionProcessor)
                 .scan<VS>(savedViewState ?: defaultViewState) { viewState: VS, result -> viewState.reduce(result) as VS }
                 .distinctUntilChanged()
                 .replay(1)
@@ -31,21 +31,17 @@ abstract class MviViewModel<A: MviAction, R: MviResult, VS: MviViewState<R>>(
         }
     }
 
-    fun processActions(actions: Observable<A>) {
-        disposables.add(actions.subscribe(actionSource))
+    fun getViewStatesObservable() =
+        viewStatesObservable ?: throw Exception(
+            "You need to invoke initViewStatesObservable(lastViewState, alwaysInitWithSavedViewState) " +
+                    "in onCreate() method of Your Activity or onViewCreated() method of Your Fragment"
+        )
+
+    fun processActions(actionsObservable: Observable<A>) {
+        actionsObservable.subscribe(actionSource).run { disposables.add(this) }
     }
 
     fun clear() {
         disposables.clear()
     }
-
-    /**
-     * In ViewModel subclass change to `true` if:
-     * - fragment contains views which handle its state recreation by them self
-     * When set to true than during fragment recreation we do not subscribe to the previously created observer
-     * with views states, but instead we created new one.
-     * As a consequence: on fragment recreation we do not re emit the last ViewState but instead the saved one
-     * Useful in fragments when we do not want to loose view date which are not stored in the view state
-     */
-    protected open fun useSavedStateOnFragmentRecreation() = false
 }

@@ -10,12 +10,10 @@ import pl.mobite.sample.security.ui.base.mvi.SchedulerProvider
 import pl.mobite.sample.security.ui.base.mvi.createActionProcessor
 import pl.mobite.sample.security.ui.base.mvi.onNextSafe
 import pl.mobite.sample.security.ui.components.secretkey.mvi.SecretKeyAction.*
-import pl.mobite.sample.security.ui.components.secretkey.mvi.SecretKeyResult.ErrorResult
-import pl.mobite.sample.security.ui.components.secretkey.mvi.SecretKeyResult.InFlightResult
+import pl.mobite.sample.security.ui.components.secretkey.mvi.SecretKeyResult.*
 
 
 class SecretKeyActionProcessor: MviActionsProcessor<SecretKeyAction, SecretKeyResult>(), KoinComponent {
-
 
     private val secretKeyRepository: SecretKeyRepository by inject()
     private val schedulerProvider: SchedulerProvider by inject()
@@ -31,37 +29,36 @@ class SecretKeyActionProcessor: MviActionsProcessor<SecretKeyAction, SecretKeyRe
 
     private val checkKeyProcessor =
         createSecretKeyActionProcessor<CheckKeyAction> { action ->
-            val hasKey = secretKeyRepository.checkKey(action.keyAlias)
-            if (hasKey) {
-                onNextSafe(SecretKeyResult.HasValidKeyResult(action.keyAlias))
+            onNextSafe(if (secretKeyRepository.checkKey(action.keyAlias)) {
+                HasValidKeyResult(action.keyAlias)
             } else {
-                onNextSafe(SecretKeyResult.NoValidKeyResult)
-            }
+                NoValidKeyResult
+            })
         }
 
     private val generateNewKeyProcessor =
         createSecretKeyActionProcessor<GenerateNewKeyAction> { action ->
             secretKeyRepository.generateKey(action.keyAlias)
-            onNextSafe(SecretKeyResult.HasValidKeyResult(action.keyAlias))
+            onNextSafe(HasValidKeyResult(action.keyAlias))
         }
 
     private val removeKeyProcessor =
         createSecretKeyActionProcessor<RemoveKeyAction> { action ->
             secretKeyRepository.removeKey(action.keyAlias)
-            onNextSafe(SecretKeyResult.NoValidKeyResult)
+            onNextSafe(NoValidKeyResult)
         }
 
     private val encryptMessageProcessor =
         createSecretKeyActionProcessor<EncryptMessageAction> { action ->
             val messageEncrypted = secretKeyRepository.encrypt(action.keyAlias, action.messageToEncrypt)
-            onNextSafe(SecretKeyResult.EncryptMessageResult(action.keyAlias, messageEncrypted))
+            onNextSafe(EncryptMessageResult(action.keyAlias, messageEncrypted))
         }
 
     private val decryptMessageProcessor =
         createSecretKeyActionProcessor<DecryptMessageAction> { action ->
             val messageDecrypted = secretKeyRepository.decrypt(action.keyAlias, action.messageToDecrypt)
             onNextSafe(
-                SecretKeyResult.DecryptMessageResult(
+                DecryptMessageResult(
                     action.keyAlias,
                     action.messageToDecrypt,
                     messageDecrypted
@@ -73,7 +70,7 @@ class SecretKeyActionProcessor: MviActionsProcessor<SecretKeyAction, SecretKeyRe
         createActionProcessor<ClearMessagesAction, SecretKeyResult>(
             schedulerProvider
         ) {
-            onNextSafe(SecretKeyResult.ClearMessagesResult)
+            onNextSafe(ClearMessagesResult)
         }
 
     private fun <A: SecretKeyAction>createSecretKeyActionProcessor(
