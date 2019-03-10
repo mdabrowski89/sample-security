@@ -11,16 +11,14 @@ abstract class MviBaseFragment<
         ViewStateType: MviViewState<ResultType>,
         ViewModelType: MviViewModel<ActionType, ResultType, ViewStateType>>(
     private val viewModelClass: Class<ViewModelType>
-): BaseFragment() {
+): BaseFragment(), MviControllerCallback<ActionType, ResultType, ViewStateType> {
 
     protected val mviController by lazy {
         MviController(
             ViewModelProviders.of(this),
             javaClass.name,
             lifecycle,
-            ::render,
-            ::initialAction,
-            ::updateViewStateBeforeSave
+            this
         )
     }
 
@@ -31,7 +29,7 @@ abstract class MviBaseFragment<
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mviController.initViewStatesObservable(savedInstanceState, alwaysInitWithSavedViewState())
+        mviController.initViewStatesObservable(savedInstanceState)
     }
 
     override fun onDestroyView() {
@@ -49,27 +47,4 @@ abstract class MviBaseFragment<
         mviController.saveLastViewState(outState)
         super.onSaveInstanceState(outState)
     }
-
-    /**
-     * Sends this action right after subscription to viewStates observer
-     */
-    open fun initialAction(lastViewState: ViewStateType?): ActionType? = null
-
-    /**
-     * Update UI based on ViewState
-     */
-    abstract fun render(viewState: ViewStateType)
-
-    /**
-     * Update the last rendered view state before:
-     * 1. it will be saved to outBundle in onSaveInstanceState() method
-     * 2. the view will be destroyed in onDestroyView() method
-     */
-    open fun updateViewStateBeforeSave(viewState: ViewStateType?): ViewStateType? = viewState
-
-    /**
-     * When fragment view is recreated use saved view state instead of re emitting the last one
-     */
-    open fun alwaysInitWithSavedViewState() = false
-
 }
