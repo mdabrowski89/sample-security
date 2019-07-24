@@ -2,11 +2,11 @@ package pl.mobite.sample.security.ui.components.secretkey.mvi
 
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
-import org.koin.standalone.KoinComponent
-import org.koin.standalone.inject
+import org.koin.core.KoinComponent
+import org.koin.core.inject
 import pl.mobite.sample.security.data.repositories.SecretKeyRepository
 import pl.mobite.sample.security.ui.base.mvi.MviActionsProcessor
-import pl.mobite.sample.security.ui.base.mvi.SchedulerProvider
+import pl.mobite.sample.security.ui.base.mvi.SchedulersProvider
 import pl.mobite.sample.security.ui.base.mvi.createActionProcessor
 import pl.mobite.sample.security.ui.base.mvi.onNextSafe
 import pl.mobite.sample.security.ui.components.secretkey.mvi.SecretKeyAction.*
@@ -16,7 +16,7 @@ import pl.mobite.sample.security.ui.components.secretkey.mvi.SecretKeyResult.*
 class SecretKeyActionProcessor: MviActionsProcessor<SecretKeyAction, SecretKeyResult>(), KoinComponent {
 
     private val secretKeyRepository: SecretKeyRepository by inject()
-    private val schedulerProvider: SchedulerProvider by inject()
+    private val schedulersProvider: SchedulersProvider by inject()
 
     override fun getActionProcessors(shared: Observable<SecretKeyAction>) = listOf(
         shared.connect(checkKeyProcessor),
@@ -68,7 +68,7 @@ class SecretKeyActionProcessor: MviActionsProcessor<SecretKeyAction, SecretKeyRe
 
     private val clearMessagesProcessor =
         createActionProcessor<ClearMessagesAction, SecretKeyResult>(
-            schedulerProvider
+            schedulersProvider
         ) {
             onNextSafe(ClearMessagesResult)
         }
@@ -76,7 +76,7 @@ class SecretKeyActionProcessor: MviActionsProcessor<SecretKeyAction, SecretKeyRe
     private fun <A: SecretKeyAction>createSecretKeyActionProcessor(
         doStuff: ObservableEmitter<SecretKeyResult>.(action: A) -> Unit
     ) = createActionProcessor(
-        schedulerProvider,
+        schedulersProvider,
         { InFlightResult },
         { ErrorResult(it) },
         doStuff

@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import kotlinx.android.synthetic.main.fragment_secret_key.*
 import pl.mobite.sample.security.R
-import pl.mobite.sample.security.ui.base.MviBaseFragment
+import pl.mobite.sample.security.ui.base.mvi.MviBaseFragment
 import pl.mobite.sample.security.ui.components.secretkey.mvi.SecretKeyAction
 import pl.mobite.sample.security.ui.components.secretkey.mvi.SecretKeyResult
 import pl.mobite.sample.security.ui.custom.CustomTextWatcher
@@ -32,23 +32,19 @@ class SecretKeyFragment: MviBaseFragment<SecretKeyAction, SecretKeyResult, Secre
             }
         })
 
-        generateKeyButton.setOnClickListener { mviController.accept(SecretKeyAction.GenerateNewKeyAction(KEY_ALIAS)) }
+        generateKeyButton.setOnClickListener { viewModel.generateNewKey() }
 
-        removeKeyButton.setOnClickListener { mviController.accept(SecretKeyAction.RemoveKeyAction(KEY_ALIAS)) }
+        removeKeyButton.setOnClickListener { viewModel.removeKey() }
 
         encryptButton.setOnClickListener {
-            mviController.accept(SecretKeyAction.EncryptMessageAction(KEY_ALIAS, messageInput.text.toString()))
+            viewModel.encryptMessage(messageInput.text.toString())
         }
 
         decryptButton.setOnClickListener {
-            mviController.accept(SecretKeyAction.DecryptMessageAction(KEY_ALIAS, encryptedMessageText.text.toString()))
+            viewModel.decryptMessage(encryptedMessageText.text.toString())
         }
 
-        clearMessagesButton.setOnClickListener { mviController.accept(SecretKeyAction.ClearMessagesAction) }
-    }
-
-    override fun initialAction(lastViewState: SecretKeyViewState?): SecretKeyAction? {
-        return SecretKeyAction.CheckKeyAction(KEY_ALIAS)
+        clearMessagesButton.setOnClickListener { viewModel.clearMessage() }
     }
 
     override fun render(viewState: SecretKeyViewState) {
@@ -91,10 +87,5 @@ class SecretKeyFragment: MviBaseFragment<SecretKeyAction, SecretKeyResult, Secre
             encryptButton.isEnabled = !isLoading && messageInput.text?.isNotBlank() ?: false
             decryptButton.isEnabled = !isLoading
         }
-    }
-
-    companion object {
-
-        private const val KEY_ALIAS = "BLOSSOM"
     }
 }

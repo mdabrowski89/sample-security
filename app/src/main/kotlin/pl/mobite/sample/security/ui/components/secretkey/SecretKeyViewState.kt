@@ -3,7 +3,7 @@ package pl.mobite.sample.security.ui.components.secretkey
 import kotlinx.android.parcel.Parcelize
 import pl.mobite.sample.security.ui.base.mvi.MviViewState
 import pl.mobite.sample.security.ui.base.mvi.ViewStateEmptyEvent
-import pl.mobite.sample.security.ui.base.mvi.ViewStateEvent
+import pl.mobite.sample.security.ui.base.mvi.ViewStateErrorEvent
 import pl.mobite.sample.security.ui.components.secretkey.mvi.SecretKeyResult
 import pl.mobite.sample.security.ui.components.secretkey.mvi.SecretKeyResult.*
 
@@ -14,7 +14,7 @@ data class SecretKeyViewState(
     val messageDecrypted: String?,
     val isLoading: Boolean,
     val clearEvent: ViewStateEmptyEvent?,
-    val errorEvent: ViewStateEvent<Throwable>?
+    val errorEvent: ViewStateErrorEvent?
 ): MviViewState<SecretKeyResult> {
 
     companion object {
@@ -54,7 +54,7 @@ data class SecretKeyViewState(
         messageEncrypted = null,
         messageDecrypted = null,
         errorEvent = null,
-        clearEvent = ViewStateEvent()
+        clearEvent = ViewStateEmptyEvent()
     )
 
     private fun EncryptMessageResult.reduce() = copy(
@@ -78,7 +78,7 @@ data class SecretKeyViewState(
         messageEncrypted = null,
         messageDecrypted = null,
         errorEvent = null,
-        clearEvent = ViewStateEvent()
+        clearEvent = ViewStateEmptyEvent()
     )
 
     private fun InFlightResult.reduce() = copy(
@@ -88,7 +88,7 @@ data class SecretKeyViewState(
 
     private fun ErrorResult.reduce() = copy(
         isLoading = false,
-        errorEvent = ViewStateEvent(error)
+        errorEvent = ViewStateErrorEvent(error)
     )
 }
 

@@ -1,7 +1,8 @@
 package pl.mobite.sample.security
 
 import android.app.Application
-import org.koin.android.ext.android.startKoin
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.startKoin
 import pl.mobite.sample.security.di.appModule
 import pl.mobite.sample.security.di.repositoriesModule
 
@@ -16,7 +17,10 @@ class SecurityApp: Application() {
     }
 
     private fun initKoin() {
-        startKoin(this, listOf(appModule, repositoriesModule))
+        startKoin {
+            androidContext(this@SecurityApp)
+            modules(appModule, repositoriesModule)
+        }
     }
 
     companion object {

@@ -1,12 +1,12 @@
 package pl.mobite.sample.security.di
 
-import org.koin.dsl.module.module
-import pl.mobite.sample.security.ui.base.mvi.SchedulerProvider
-import pl.mobite.sample.security.utils.AndroidSchedulerProvider
+import org.koin.dsl.module
+import pl.mobite.sample.security.ui.base.mvi.DefaultSchedulersProvider
+import pl.mobite.sample.security.ui.base.mvi.SchedulersProvider
 
 
 val appModule = module {
 
-    single<SchedulerProvider> { AndroidSchedulerProvider.instance }
+    single<SchedulersProvider> { DefaultSchedulersProvider.instance }
 
 }

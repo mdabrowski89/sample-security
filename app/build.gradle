@@ -5,14 +5,14 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 android {
-    compileSdkVersion Versions.compiledSdk
-    buildToolsVersion Versions.buildTools
+    compileSdkVersion VersionsSdk.compiledSdk
+    buildToolsVersion VersionsSdk.buildTools
 
     defaultConfig {
         project.ext.appName = 'sample-security'
         applicationId "pl.mobite.sample.security"
-        minSdkVersion Versions.minSdk
-        targetSdkVersion Versions.targetSdk
+        minSdkVersion VersionsSdk.minSdk
+        targetSdkVersion VersionsSdk.targetSdk
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -51,32 +51,32 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation Dependencies.kotlinStdLib
-    implementation Dependencies.kotlinReflectLib
+    implementation DependenciesCore.kotlinStdLib
+    implementation DependenciesCore.kotlinReflectLib
 
-    implementation Dependencies.androidxCoreLib
-    implementation Dependencies.androidxAppcompatLib
-    implementation Dependencies.androidxVectorDrawableLib
-    implementation Dependencies.androidxLegacySupportLib
-    implementation Dependencies.androidxMaterialLib
+    implementation DependenciesCore.rxAndroidLib
+    implementation DependenciesCore.rxKotlinLib
+    implementation DependenciesCore.rxRelayLib
 
-    implementation Dependencies.androidxLifecycleViewModelsLib
-    implementation Dependencies.androidxLifecycleExtensionsLib
+    implementation DependenciesCore.koinLib
 
-    implementation Dependencies.archNavigationFragmentLib
-    implementation Dependencies.archNavigationUiLib
+    implementation DependenciesJetpack.androidxCoreKtx
+    implementation DependenciesJetpack.androidxAppcompatLib
+    implementation DependenciesJetpack.androidxVectorDrawableLib
+    implementation DependenciesJetpack.androidxLegacySupportLib
+    implementation DependenciesJetpack.androidxMaterialLib
 
-    implementation Dependencies.koinLib
-    
-    implementation Dependencies.rxAndroidLib
-    implementation Dependencies.rxKotlinLib
-    implementation Dependencies.rxRelayLib
+    implementation DependenciesJetpack.androidxLifecycleLib
+    implementation DependenciesJetpack.androidxLifecycleSavedState
 
-    testImplementation Dependencies.junitLib
-    testImplementation Dependencies.mockitoLib
+    implementation DependenciesJetpack.androidxNavigationFragmentLib
+    implementation DependenciesJetpack.androidxNavigationUiLib
 
-    androidTestImplementation Dependencies.testRunnerLib
-    androidTestImplementation Dependencies.espressoLib
+    testImplementation DependenciesTesting.junitLib
+    testImplementation DependenciesTesting.mockitoLib
+
+    androidTestImplementation DependenciesTesting.androidxTestRunnerLib
+    androidTestImplementation DependenciesTesting.espressoLib
 }
 
 task changeApkName() {
