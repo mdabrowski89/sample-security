@@ -6,18 +6,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.addTo
 import kotlinx.android.synthetic.main.fragment_secret_key.*
 import pl.mobite.sample.security.R
-import pl.mobite.sample.security.ui.base.mvi.MviBaseFragment
-import pl.mobite.sample.security.ui.components.secretkey.mvi.SecretKeyAction
-import pl.mobite.sample.security.ui.components.secretkey.mvi.SecretKeyResult
+import pl.mobite.sample.security.ui.base.mvi.provide
 import pl.mobite.sample.security.ui.custom.CustomTextWatcher
 import pl.mobite.sample.security.utils.setVisibleOrGone
 
 
-class SecretKeyFragment: MviBaseFragment<SecretKeyAction, SecretKeyResult, SecretKeyViewState, SecretKeyViewModel>(
-    SecretKeyViewModel::class.java
-) {
+class SecretKeyFragment: Fragment() {
+
+    private val viewModel by lazy { provide(SecretKeyViewModel::class.java) }
+    private val compositeDisposable = CompositeDisposable()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_secret_key, container, false)
@@ -47,7 +49,18 @@ class SecretKeyFragment: MviBaseFragment<SecretKeyAction, SecretKeyResult, Secre
         clearMessagesButton.setOnClickListener { viewModel.clearMessage() }
     }
 
-    override fun render(viewState: SecretKeyViewState) {
+    override fun onStart() {
+        super.onStart()
+        viewModel.subscribe(::render).addTo(compositeDisposable)
+        viewModel.onStart()
+    }
+
+    override fun onStop() {
+        compositeDisposable.dispose()
+        super.onStop()
+    }
+
+    private fun render(viewState: SecretKeyViewState) {
         with(viewState) {
             errorEvent?.consume {
                 Toast.makeText(activity, R.string.error_message, Toast.LENGTH_SHORT).show()

@@ -15,8 +15,8 @@ class SecretKeyViewModel(
     SecretKeyViewState.default()
 ) {
 
-    override fun initialActions(): List<SecretKeyAction> {
-        return listOf(SecretKeyAction.CheckKeyAction(KEY_ALIAS))
+    fun onStart() {
+        accept(SecretKeyAction.CheckKeyAction(KEY_ALIAS))
     }
 
     fun generateNewKey() {
