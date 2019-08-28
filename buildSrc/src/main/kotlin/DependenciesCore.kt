@@ -1,8 +1,8 @@
 object VersionsCore {
 
-    const val gradle = "3.3.2"
+    const val gradle = "3.5.0"
 
-    const val kotlin = "1.3.31"
+    const val kotlin = "1.3.50"
     const val kotlinCoroutines = "1.0.1"
 
     const val rxAndroid = "2.1.0"
