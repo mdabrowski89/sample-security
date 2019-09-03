@@ -1,29 +1,27 @@
 package pl.mobite.sample.security.data.repositories
 
+import android.annotation.TargetApi
+import android.os.Build
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 import pl.mobite.sample.security.data.local.EncryptionPreferences
 import pl.mobite.sample.security.encryption.CipherWrapper
 import pl.mobite.sample.security.encryption.KeystoreWrapper
-import javax.crypto.Cipher
 import javax.crypto.SecretKey
 
-
-class SecretKeyRepositoryImpl: SecretKeyRepository, KoinComponent {
+@TargetApi(Build.VERSION_CODES.M)
+class SecretKeyRepositoryApi23Impl: SecretKeyRepository, KoinComponent {
 
     private val keystoreWrapper: KeystoreWrapper by inject()
     private val cipherWrapper: CipherWrapper by inject()
     private val encryptionPreferences: EncryptionPreferences by inject()
 
     override fun checkKey(keyAlias: String): Boolean {
-        return keystoreWrapper.getAsymmetricKeyPair(keyAlias) != null
-                && encryptionPreferences.encryptedSecretKey != null
+        return keystoreWrapper.getSymmetricKey(keyAlias) != null
     }
 
     override fun generateKey(keyAlias: String) {
-        val keyPair = keystoreWrapper.generateAsymmetricKey(keyAlias)
-        val secretKey = keystoreWrapper.generateDefaultSymmetricKey()
-        encryptionPreferences.encryptedSecretKey = cipherWrapper.wrapKey(secretKey, keyPair.public)
+        keystoreWrapper.generateSymmetricKeyApi23(keyAlias)
     }
 
     override fun removeKey(keyAlias: String) {
@@ -32,7 +30,7 @@ class SecretKeyRepositoryImpl: SecretKeyRepository, KoinComponent {
     }
 
     override fun encrypt(keyAlias: String, message: String): String {
-        return getSecretKey(keyAlias)?.let {
+        return keystoreWrapper.getSymmetricKey(keyAlias)?.let {
             val (encryptedMessage, initializationVector) = cipherWrapper.encrypt(message, it)
             encryptionPreferences.initializationVector = initializationVector
             return encryptedMessage
@@ -40,19 +38,9 @@ class SecretKeyRepositoryImpl: SecretKeyRepository, KoinComponent {
     }
 
     override fun decrypt(keyAlias: String, message: String): String {
-        val secretKey: SecretKey = getSecretKey(keyAlias) ?: throw Exception("Secret key not generated for alias: $keyAlias")
+        val secretKey: SecretKey = keystoreWrapper.getSymmetricKey(keyAlias) ?: throw Exception("Secret key not generated for alias: $keyAlias")
         val initializationVector: String = encryptionPreferences.initializationVector ?: throw Exception("Missing initialization vector")
         return cipherWrapper.decrypt(message, initializationVector, secretKey)
-    }
-
-    private fun getSecretKey(keyAlias: String): SecretKey? {
-        val encryptedSecretKey = encryptionPreferences.encryptedSecretKey
-        val keyPair = keystoreWrapper.getAsymmetricKeyPair(keyAlias)
-        return if (encryptedSecretKey != null && keyPair != null) {
-            cipherWrapper.unWrapKey(encryptedSecretKey, "AES", Cipher.SECRET_KEY, keyPair.private) as SecretKey
-        } else {
-            null
-        }
     }
 
 }

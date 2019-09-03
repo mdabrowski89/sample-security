@@ -63,6 +63,7 @@ class SecretKeyFragment: Fragment() {
     private fun render(viewState: SecretKeyViewState) {
         with(viewState) {
             errorEvent?.consume {
+                it.printStackTrace()
                 Toast.makeText(activity, R.string.error_message, Toast.LENGTH_SHORT).show()
             }
 

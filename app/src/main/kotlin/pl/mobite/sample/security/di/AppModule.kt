@@ -8,5 +8,4 @@ import pl.mobite.sample.security.ui.base.mvi.SchedulersProvider
 val appModule = module {
 
     single<SchedulersProvider> { DefaultSchedulersProvider.instance }
-
 }

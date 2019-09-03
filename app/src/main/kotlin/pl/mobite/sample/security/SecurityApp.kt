@@ -4,6 +4,7 @@ import android.app.Application
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 import pl.mobite.sample.security.di.appModule
+import pl.mobite.sample.security.di.encryptionModule
 import pl.mobite.sample.security.di.repositoriesModule
 
 
@@ -19,7 +20,7 @@ class SecurityApp: Application() {
     private fun initKoin() {
         startKoin {
             androidContext(this@SecurityApp)
-            modules(appModule, repositoriesModule)
+            modules(appModule, repositoriesModule, encryptionModule)
         }
     }
 
