@@ -3,8 +3,8 @@ package pl.mobite.sample.security.uscases
 import android.os.Build
 import androidx.annotation.RequiresApi
 import pl.mobite.sample.security.data.local.EncryptionPreferences
-import pl.mobite.sample.security.encryption.CipherWrapper
-import pl.mobite.sample.security.encryption.KeystoreWrapper
+import pl.mobite.sample.security.wrappers.CipherWrapper
+import pl.mobite.sample.security.wrappers.KeystoreWrapper
 import javax.crypto.Cipher
 import javax.crypto.SecretKey
 

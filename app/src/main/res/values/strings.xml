@@ -27,6 +27,9 @@
     <string name="fingerprint_nav_item_title">Fingerprint</string>
     <string name="fingerprint_screen_title">@string/fingerprint_nav_item_title</string>
     <string name="fingerprint_description">You can generate secret key which will be secured with the user fingerprint, and use this key to encrypt/decrypt the message</string>
+    <string name="fingerprint_error_pre_marshmallow">Feature available from Android Marshmallow</string>
+    <string name="fingerprint_error_missing_hardware">Fingerprint scanner is missing on your device</string>
+    <string name="fingerprint_error_missing_fingerprints">You mast enroll at least one fingerprint</string>
 
     <!-- Pin fragment -->
     <string name="pin_nav_item_title">Pin</string>

@@ -1,4 +1,4 @@
-package pl.mobite.sample.security.encryption
+package pl.mobite.sample.security.wrappers
 
 import android.util.Base64
 import java.security.Key
@@ -51,4 +51,6 @@ class CipherWrapper {
         cipherRSA.init(Cipher.UNWRAP_MODE, keyToUnWrapWith)
         return cipherRSA.unwrap(encryptedKeyData, algorithm, wrappedKeyType)
     }
+
+    data class EncryptionResult(val encryptedMessage: String, val initializationVector: String)
 }

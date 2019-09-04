@@ -1,4 +1,4 @@
-package pl.mobite.sample.security.encryption
+package pl.mobite.sample.security.wrappers
 
 import android.content.Context
 import android.os.Build
