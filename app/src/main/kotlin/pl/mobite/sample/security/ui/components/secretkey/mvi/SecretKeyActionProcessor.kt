@@ -4,18 +4,19 @@ import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import org.koin.core.KoinComponent
 import org.koin.core.inject
-import pl.mobite.sample.security.data.repositories.SecretKeyRepository
-import pl.mobite.sample.security.ui.base.mvi.MviActionsProcessor
-import pl.mobite.sample.security.ui.base.mvi.SchedulersProvider
-import pl.mobite.sample.security.ui.base.mvi.createActionProcessor
-import pl.mobite.sample.security.ui.base.mvi.onNextSafe
+import pl.mobite.sample.security.ui.base.mvi.*
 import pl.mobite.sample.security.ui.components.secretkey.mvi.SecretKeyAction.*
 import pl.mobite.sample.security.ui.components.secretkey.mvi.SecretKeyResult.*
+import pl.mobite.sample.security.uscases.*
 
 
 class SecretKeyActionProcessor: MviActionsProcessor<SecretKeyAction, SecretKeyResult>(), KoinComponent {
 
-    private val secretKeyRepository: SecretKeyRepository by inject()
+    private val getSecretKeyUseCase: GetSecretKeyUseCase by inject()
+    private val generateSecretKeyUseCase: GenerateSecretKeyUseCase by inject()
+    private val removeSecretKeyUseCase: RemoveSecretKeyUseCase by inject()
+    private val encryptUseCase: EncryptUseCase by inject()
+    private val decryptUseCase: DecryptUseCase by inject()
     private val schedulersProvider: SchedulersProvider by inject()
 
     override fun getActionProcessors(shared: Observable<SecretKeyAction>) = listOf(
@@ -29,41 +30,53 @@ class SecretKeyActionProcessor: MviActionsProcessor<SecretKeyAction, SecretKeyRe
 
     private val checkKeyProcessor =
         createSecretKeyActionProcessor<CheckKeyAction> { action ->
-            onNextSafe(if (secretKeyRepository.checkKey(action.keyAlias)) {
+            val hasKey = getSecretKeyUseCase(action.keyAlias) != null
+            onNextSafe(if (hasKey) {
                 HasValidKeyResult(action.keyAlias)
             } else {
                 NoValidKeyResult
             })
+            onCompleteSafe()
         }
 
     private val generateNewKeyProcessor =
         createSecretKeyActionProcessor<GenerateNewKeyAction> { action ->
-            secretKeyRepository.generateKey(action.keyAlias)
+            generateSecretKeyUseCase(action.keyAlias)
             onNextSafe(HasValidKeyResult(action.keyAlias))
+            onCompleteSafe()
         }
 
     private val removeKeyProcessor =
         createSecretKeyActionProcessor<RemoveKeyAction> { action ->
-            secretKeyRepository.removeKey(action.keyAlias)
+            removeSecretKeyUseCase(action.keyAlias)
             onNextSafe(NoValidKeyResult)
+            onCompleteSafe()
         }
 
     private val encryptMessageProcessor =
         createSecretKeyActionProcessor<EncryptMessageAction> { action ->
-            val messageEncrypted = secretKeyRepository.encrypt(action.keyAlias, action.messageToEncrypt)
-            onNextSafe(EncryptMessageResult(action.keyAlias, messageEncrypted))
+            val secretKey = getSecretKeyUseCase(action.keyAlias)
+            if (secretKey != null) {
+                val messageEncrypted = encryptUseCase(action.messageToEncrypt, secretKey)
+                onNextSafe(EncryptMessageResult(action.keyAlias, messageEncrypted))
+            } else {
+                throw Exception("Secret key not generated for alias: ${action.keyAlias}")
+            }
+            onCompleteSafe()
         }
 
     private val decryptMessageProcessor =
         createSecretKeyActionProcessor<DecryptMessageAction> { action ->
-            val messageDecrypted = secretKeyRepository.decrypt(action.keyAlias, action.messageToDecrypt)
-            onNextSafe(
-                DecryptMessageResult(
-                    action.keyAlias,
-                    action.messageToDecrypt,
-                    messageDecrypted
+            val secretKey = getSecretKeyUseCase(action.keyAlias)
+            if (secretKey != null) {
+                val messageDecrypted = decryptUseCase(action.messageToDecrypt, secretKey)
+                onNextSafe(
+                    DecryptMessageResult(action.keyAlias, action.messageToDecrypt, messageDecrypted)
                 )
-            )
+            } else {
+                throw Exception("Secret key not generated for alias: ${action.keyAlias}")
+            }
+            onCompleteSafe()
         }
 
     private val clearMessagesProcessor =
@@ -71,6 +84,7 @@ class SecretKeyActionProcessor: MviActionsProcessor<SecretKeyAction, SecretKeyRe
             schedulersProvider
         ) {
             onNextSafe(ClearMessagesResult)
+            onCompleteSafe()
         }
 
     private fun <A: SecretKeyAction>createSecretKeyActionProcessor(

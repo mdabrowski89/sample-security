@@ -8,9 +8,9 @@ import pl.mobite.sample.security.encryption.KeystoreWrapper
 
 val encryptionModule = module {
 
-    single<KeystoreWrapper> { KeystoreWrapper(get()) }
+    single { KeystoreWrapper(get()) }
 
-    single<CipherWrapper> { CipherWrapper() }
+    single { CipherWrapper() }
 
-    single<EncryptionPreferences> { EncryptionPreferences(get()) }
+    single { EncryptionPreferences(get()) }
 }
