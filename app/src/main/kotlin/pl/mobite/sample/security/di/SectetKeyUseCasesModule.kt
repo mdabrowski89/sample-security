@@ -14,7 +14,7 @@ val secretKeyUseCasesModule = module {
         }
     }
 
-    factory<GetSecretKeyUseCase> {
+    factory {
         if (hasMarshmallow()) {
             GetSecretKeyUseCaseApi23Impl(get())
         } else {

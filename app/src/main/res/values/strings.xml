@@ -5,6 +5,7 @@
     <string name="button_remove_key">Remove key</string>
     <string name="button_encrypt">Encrypt</string>
     <string name="button_decrypt">Decrypt</string>
+    <string name="button_cancel">Cancel</string>
     <string name="button_clear_messages">Clear messages</string>
     <string name="label_key_alias">Secret key alias: %s</string>
     <string name="label_key_missing">(no key)</string>
@@ -30,11 +31,20 @@
     <string name="fingerprint_error_pre_marshmallow">Feature available from Android Marshmallow</string>
     <string name="fingerprint_error_missing_hardware">Fingerprint scanner is missing on your device</string>
     <string name="fingerprint_error_missing_fingerprints">You mast enroll at least one fingerprint</string>
+    <string name="fingerprint_error_device_is_not_secure">Your device needs to be secured with fingerprint</string>
+    <string name="fingerprint_confirmation_title">Confirm operation</string>
+    <string name="fingerprint_confirmation_negative_button">Cancel</string>
+
+    <!-- Old Fingerprint dialog -->
+    <string name="fingerprint_dialog_description">Confirm fingerprint to continue</string>
+    <string name="description_fingerprint_icon">Fingerprint icon</string>
+    <string name="fingerprint_hint">Touch sensor</string>
+    <string name="fingerprint_not_recognized">Fingerprint not recognized. Try again</string>
+    <string name="fingerprint_success">Fingerprint recognized</string>
 
     <!-- Pin fragment -->
     <string name="pin_nav_item_title">Pin</string>
     <string name="pin_screen_title">@string/pin_nav_item_title</string>
     <string name="pin_description">You can generate secret key which will be secured with the pin, and use this key to encrypt/decrypt the message</string>
-
 
 </resources>

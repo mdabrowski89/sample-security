@@ -12,12 +12,12 @@ import pl.mobite.sample.security.uscases.*
 
 class SecretKeyActionProcessor: MviActionsProcessor<SecretKeyAction, SecretKeyResult>(), KoinComponent {
 
+    private val schedulersProvider: SchedulersProvider by inject()
     private val getSecretKeyUseCase: GetSecretKeyUseCase by inject()
     private val generateSecretKeyUseCase: GenerateSecretKeyUseCase by inject()
     private val removeSecretKeyUseCase: RemoveSecretKeyUseCase by inject()
     private val encryptUseCase: EncryptUseCase by inject()
     private val decryptUseCase: DecryptUseCase by inject()
-    private val schedulersProvider: SchedulersProvider by inject()
 
     override fun getActionProcessors(shared: Observable<SecretKeyAction>) = listOf(
         shared.connect(checkKeyProcessor),

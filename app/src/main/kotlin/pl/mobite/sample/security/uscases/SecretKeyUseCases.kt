@@ -8,17 +8,17 @@ import pl.mobite.sample.security.wrappers.KeystoreWrapper
 import javax.crypto.Cipher
 import javax.crypto.SecretKey
 
-abstract class GenerateSecretKeyUseCase: (String) -> Unit
-abstract class RemoveSecretKeyUseCase: (String) -> Unit
-abstract class GetSecretKeyUseCase: (String) -> SecretKey?
-abstract class EncryptUseCase: (String, SecretKey) -> String
-abstract class DecryptUseCase: (String, SecretKey) -> String
+interface GenerateSecretKeyUseCase: (String) -> Unit
+interface RemoveSecretKeyUseCase: (String) -> Unit
+interface GetSecretKeyUseCase: (String) -> SecretKey?
+interface EncryptUseCase: (String, SecretKey) -> String
+interface DecryptUseCase: (String, SecretKey) -> String
 
 class GenerateSecretKeyUseCaseImpl(
     private val keystoreWrapper: KeystoreWrapper,
     private val cipherWrapper: CipherWrapper,
     private val encryptionPreferences: EncryptionPreferences
-): GenerateSecretKeyUseCase() {
+): GenerateSecretKeyUseCase {
 
     override fun invoke(alias: String) {
         val keyPair = keystoreWrapper.generateAsymmetricKey(alias)
@@ -30,7 +30,7 @@ class GenerateSecretKeyUseCaseImpl(
 @RequiresApi(Build.VERSION_CODES.M)
 class GenerateSecretKeyUseCaseApi23Impl(
     private val keystoreWrapper: KeystoreWrapper
-): GenerateSecretKeyUseCase() {
+): GenerateSecretKeyUseCase {
 
     override fun invoke(alias: String) {
         keystoreWrapper.generateSymmetricKeyApi23(alias)
@@ -41,7 +41,7 @@ class GetSecretKeyUseCaseImpl(
     private val keystoreWrapper: KeystoreWrapper,
     private val cipherWrapper: CipherWrapper,
     private val encryptionPreferences: EncryptionPreferences
-): GetSecretKeyUseCase() {
+): GetSecretKeyUseCase {
 
     override fun invoke(alias: String): SecretKey? {
         val encryptedSecretKey = encryptionPreferences.encryptedSecretKey
@@ -57,7 +57,7 @@ class GetSecretKeyUseCaseImpl(
 @RequiresApi(Build.VERSION_CODES.M)
 class GetSecretKeyUseCaseApi23Impl(
     private val keystoreWrapper: KeystoreWrapper
-): GetSecretKeyUseCase() {
+): GetSecretKeyUseCase {
 
     override fun invoke(alias: String): SecretKey? {
         return keystoreWrapper.getSymmetricKey(alias)
@@ -67,7 +67,7 @@ class GetSecretKeyUseCaseApi23Impl(
 class RemoveSecretKeyUseCaseImpl(
     private val keystoreWrapper: KeystoreWrapper,
     private val encryptionPreferences: EncryptionPreferences
-): RemoveSecretKeyUseCase() {
+): RemoveSecretKeyUseCase {
 
     override fun invoke(alias: String) {
         keystoreWrapper.removeKey(alias)
@@ -78,11 +78,11 @@ class RemoveSecretKeyUseCaseImpl(
 class EncryptUseCaseImpl(
     private val cipherWrapper: CipherWrapper,
     private val encryptionPreferences: EncryptionPreferences
-): EncryptUseCase() {
+): EncryptUseCase {
 
     override fun invoke(message: String, secretKey: SecretKey): String {
         val (encryptedMessage, initializationVector) = cipherWrapper.encrypt(message, secretKey)
-        encryptionPreferences.initializationVector = initializationVector
+        encryptionPreferences.secretKeyIv = initializationVector
         return encryptedMessage
     }
 }
@@ -90,10 +90,10 @@ class EncryptUseCaseImpl(
 class DecryptUseCaseImpl(
     private val cipherWrapper: CipherWrapper,
     private val encryptionPreferences: EncryptionPreferences
-): DecryptUseCase() {
+): DecryptUseCase {
 
     override fun invoke(message: String, secretKey: SecretKey): String {
-        val initializationVector = encryptionPreferences.initializationVector ?: throw Exception("Missing initialization vector")
+        val initializationVector = encryptionPreferences.secretKeyIv ?: throw Exception("Missing initialization vector")
         return cipherWrapper.decrypt(message, initializationVector, secretKey)
     }
 }

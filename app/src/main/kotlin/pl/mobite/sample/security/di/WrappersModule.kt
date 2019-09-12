@@ -1,9 +1,7 @@
 package pl.mobite.sample.security.di
 
 import org.koin.dsl.module
-import pl.mobite.sample.security.wrappers.CipherWrapper
-import pl.mobite.sample.security.wrappers.FingerprintManagerWrapper
-import pl.mobite.sample.security.wrappers.KeystoreWrapper
+import pl.mobite.sample.security.wrappers.*
 
 
 val wrappersModule = module {
@@ -13,4 +11,8 @@ val wrappersModule = module {
     single { CipherWrapper() }
 
     single { FingerprintManagerWrapper(get()) }
+
+    single { KeyguardWrapper(get()) }
+
+    single { BiometricPromptWrapper() }
 }

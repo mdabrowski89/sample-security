@@ -56,7 +56,7 @@ class SecretKeyFragment: Fragment() {
     }
 
     override fun onStop() {
-        compositeDisposable.dispose()
+        compositeDisposable.clear()
         super.onStop()
     }
 
@@ -100,6 +100,11 @@ class SecretKeyFragment: Fragment() {
             messageInput.isEnabled = !isLoading
             encryptButton.isEnabled = !isLoading && messageInput.text?.isNotBlank() ?: false
             decryptButton.isEnabled = !isLoading
+
+            errorEvent?.consume {
+                it.printStackTrace()
+                Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }

@@ -3,4 +3,13 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+
+    <!-- Old Fingerprint dialog -->
+    <color name="fingerprint_success">#009688</color>
+    <color name="fingerprint_error">#F4511E</color>
+    <color name="hint_color">#42000000</color>
+    <color name="fingerprint_fill">#FFFFFF</color>
+    <color name="warning_color">#f4511e</color>
+    <color name="success_color">#009688</color>
+
 </resources>

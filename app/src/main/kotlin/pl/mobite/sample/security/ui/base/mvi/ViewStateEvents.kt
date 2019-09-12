@@ -8,12 +8,28 @@ import java.util.concurrent.atomic.AtomicBoolean
 @Parcelize
 data class ViewStateEvent<T: Parcelable>(
     val payload: T
-): SingleEvent<T>(payload) {
+): SingleEvent<T>(payload), Parcelable {
     
     override fun equals(other: Any?): Boolean {
         return super.equals(other)
     }
     
+    override fun hashCode(): Int {
+        var result = payload.hashCode()
+        result = 31 * result + isConsumed.hashCode()
+        return result
+    }
+}
+
+
+data class ViewStateNonParcelableEvent<T>(
+    val payload: T
+): SingleEvent<T>(payload){
+
+    override fun equals(other: Any?): Boolean {
+        return super.equals(other)
+    }
+
     override fun hashCode(): Int {
         var result = payload.hashCode()
         result = 31 * result + isConsumed.hashCode()
@@ -25,7 +41,7 @@ data class ViewStateEvent<T: Parcelable>(
 @Parcelize
 data class ViewStateErrorEvent(
     val payload: Throwable
-): SingleEvent<Throwable>(payload) {
+): SingleEvent<Throwable>(payload), Parcelable {
     
     override fun equals(other: Any?): Boolean {
         return super.equals(other)
@@ -40,7 +56,7 @@ data class ViewStateErrorEvent(
 
 
 @Parcelize
-class ViewStateEmptyEvent: SingleEvent<Unit>(Unit) {
+class ViewStateEmptyEvent: SingleEvent<Unit>(Unit), Parcelable {
     
     override fun equals(other: Any?): Boolean {
         return super.equals(other)
@@ -55,7 +71,7 @@ class ViewStateEmptyEvent: SingleEvent<Unit>(Unit) {
 abstract class SingleEvent<T>(
     private val argument: T,
     protected val isConsumed: AtomicBoolean = AtomicBoolean(false)
-): Parcelable {
+) {
     
     private fun isConsumed(setAsConsumed: Boolean = false) = isConsumed.getAndSet(setAsConsumed)
     
