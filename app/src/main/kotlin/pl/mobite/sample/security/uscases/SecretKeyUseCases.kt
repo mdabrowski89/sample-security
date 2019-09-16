@@ -8,7 +8,7 @@ import pl.mobite.sample.security.wrappers.KeystoreWrapper
 import javax.crypto.Cipher
 import javax.crypto.SecretKey
 
-interface GenerateSecretKeyUseCase: (String) -> Unit
+interface GenerateSecretKeyUseCase: (String) -> SecretKey
 interface RemoveSecretKeyUseCase: (String) -> Unit
 interface GetSecretKeyUseCase: (String) -> SecretKey?
 interface EncryptUseCase: (String, SecretKey) -> String
@@ -20,10 +20,11 @@ class GenerateSecretKeyUseCaseImpl(
     private val encryptionPreferences: EncryptionPreferences
 ): GenerateSecretKeyUseCase {
 
-    override fun invoke(alias: String) {
+    override fun invoke(alias: String): SecretKey {
         val keyPair = keystoreWrapper.generateAsymmetricKey(alias)
         val secretKey = keystoreWrapper.generateDefaultSymmetricKey()
         encryptionPreferences.encryptedSecretKey = cipherWrapper.wrapKey(secretKey, keyPair.public)
+        return secretKey
     }
 }
 
@@ -32,8 +33,8 @@ class GenerateSecretKeyUseCaseApi23Impl(
     private val keystoreWrapper: KeystoreWrapper
 ): GenerateSecretKeyUseCase {
 
-    override fun invoke(alias: String) {
-        keystoreWrapper.generateSymmetricKeyApi23(alias)
+    override fun invoke(alias: String): SecretKey {
+        return keystoreWrapper.generateSymmetricKeyApi23(alias)
     }
 }
 

@@ -29,20 +29,32 @@ class FingerprintViewModel(
         accept(RemoveKeyAction(KEY_ALIAS))
     }
 
-    fun onEncryptButtonClicked() {
-        accept(PrepareEncryptionCipherAction(KEY_ALIAS))
+    fun encryptMessage(messageToEncrypt: String) {
+        val secretKey = viewState.secretKey
+        if (secretKey != null) {
+            accept(PrepareEncryptionCipherAction(secretKey, messageToEncrypt))
+        }
     }
 
-    fun onEncryptionCipherReady(authenticatedCipher: Cipher, message: String) {
-        accept(EncryptMessageAction(KEY_ALIAS, authenticatedCipher, message))
+    fun onEncryptionCipherReady(authenticatedCipher: Cipher) {
+        val messageToEncrypt = viewState.messageToEncrypt
+        if (messageToEncrypt != null) {
+            accept(EncryptMessageAction(authenticatedCipher, messageToEncrypt))
+        }
     }
 
-    fun onDecryptButtonClicked() {
-        accept(PrepareDecryptionCipherAction(KEY_ALIAS))
+    fun decryptMessage() {
+        val secretKey = viewState.secretKey
+        if (secretKey != null) {
+            accept(PrepareDecryptionCipherAction(secretKey))
+        }
     }
 
-    fun onDecryptionCipherReady(authenticatedCipher: Cipher, message: String) {
-        accept(DecryptMessageAction(KEY_ALIAS, authenticatedCipher, message))
+    fun onDecryptionCipherReady(authenticatedCipher: Cipher) {
+        val messageToDecrypt = viewState.encryptionFormViewState.messageEncrypted
+        if (messageToDecrypt != null) {
+            accept(DecryptMessageAction(authenticatedCipher, messageToDecrypt))
+        }
     }
 
     fun clearMessage() {

@@ -1,17 +1,17 @@
 package pl.mobite.sample.security.ui.components.secretkey.mvi
 
 import pl.mobite.sample.security.ui.base.mvi.MviResult
+import javax.crypto.SecretKey
 
 sealed class SecretKeyResult: MviResult {
 
-    data class HasValidKeyResult(val keyAlias: String): SecretKeyResult()
+    data class HasKeyResult(val secretKey: SecretKey, val keyAlias: String): SecretKeyResult()
 
-    object NoValidKeyResult: SecretKeyResult()
+    object NoKeyResult: SecretKeyResult()
 
-    data class EncryptMessageResult(val keyAlias: String, val messageEncrypted: String): SecretKeyResult()
+    data class EncryptMessageResult(val messageEncrypted: String): SecretKeyResult()
 
-    data class DecryptMessageResult(val keyAlias: String, val messageEncrypted: String, val messageDecrypted: String):
-        SecretKeyResult()
+    data class DecryptMessageResult(val messageDecrypted: String): SecretKeyResult()
 
     object ClearMessagesResult: SecretKeyResult()
 

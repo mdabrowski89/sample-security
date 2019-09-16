@@ -6,34 +6,30 @@ import pl.mobite.sample.security.ui.base.mvi.ViewStateEmptyEvent
 import pl.mobite.sample.security.ui.base.mvi.ViewStateErrorEvent
 import pl.mobite.sample.security.ui.components.secretkey.mvi.SecretKeyResult
 import pl.mobite.sample.security.ui.components.secretkey.mvi.SecretKeyResult.*
+import pl.mobite.sample.security.ui.custom.encryptionform.EncryptionFormViewState
+import javax.crypto.SecretKey
 
 @Parcelize
 data class SecretKeyViewState(
-    val secretKeyAlias: String?,
-    val messageEncrypted: String?,
-    val messageDecrypted: String?,
-    val isLoading: Boolean,
-    val clearEvent: ViewStateEmptyEvent?,
+    val encryptionFormViewState: EncryptionFormViewState,
+    val secretKey: SecretKey?,
     val errorEvent: ViewStateErrorEvent?
 ): MviViewState<SecretKeyResult> {
 
     companion object {
         fun default() = SecretKeyViewState(
-            secretKeyAlias = null,
-            messageEncrypted = null,
-            messageDecrypted = null,
-            isLoading = false,
-            clearEvent = null,
+            encryptionFormViewState = EncryptionFormViewState.default(),
+            secretKey = null,
             errorEvent = null
         )
     }
 
-    override fun isSavable() = !isLoading
+    override fun isSavable() = !encryptionFormViewState.inProgress
 
     override fun reduce(result: SecretKeyResult): SecretKeyViewState {
         return when (result) {
-            is HasValidKeyResult -> result.reduce()
-            is NoValidKeyResult -> result.reduce()
+            is HasKeyResult -> result.reduce()
+            is NoKeyResult -> result.reduce()
             is EncryptMessageResult -> result.reduce()
             is DecryptMessageResult -> result.reduce()
             is ClearMessagesResult -> result.reduce()
@@ -42,52 +38,65 @@ data class SecretKeyViewState(
         }
     }
 
-    private fun HasValidKeyResult.reduce() = copy(
-        isLoading = false,
-        secretKeyAlias = keyAlias,
+    private fun HasKeyResult.reduce() = copy(
+        encryptionFormViewState = encryptionFormViewState.copy(
+            inProgress = false,
+            keyAlias = keyAlias
+        ),
+        secretKey = secretKey,
         errorEvent = null
     )
 
-    private fun NoValidKeyResult.reduce() = copy(
-        isLoading = false,
-        secretKeyAlias = null,
-        messageEncrypted = null,
-        messageDecrypted = null,
-        errorEvent = null,
-        clearEvent = ViewStateEmptyEvent()
+    private fun NoKeyResult.reduce() = copy(
+        encryptionFormViewState = encryptionFormViewState.copy(
+            inProgress = false,
+            keyAlias = null,
+            messageEncrypted = null,
+            messageDecrypted = null,
+            clearEvent = ViewStateEmptyEvent()
+        ),
+        secretKey = null,
+        errorEvent = null
     )
 
     private fun EncryptMessageResult.reduce() = copy(
-        isLoading = false,
-        secretKeyAlias = keyAlias,
-        messageEncrypted = messageEncrypted,
-        messageDecrypted = null,
+        encryptionFormViewState = encryptionFormViewState.copy(
+            inProgress = false,
+            messageEncrypted = messageEncrypted,
+            messageDecrypted = null
+        ),
         errorEvent = null
     )
 
     private fun DecryptMessageResult.reduce() = copy(
-        isLoading = false,
-        secretKeyAlias = keyAlias,
-        messageEncrypted = messageEncrypted,
-        messageDecrypted = messageDecrypted,
+        encryptionFormViewState = encryptionFormViewState.copy(
+            inProgress = false,
+            messageDecrypted = messageDecrypted
+        ),
         errorEvent = null
     )
 
     private fun ClearMessagesResult.reduce() = copy(
-        isLoading = false,
-        messageEncrypted = null,
-        messageDecrypted = null,
-        errorEvent = null,
-        clearEvent = ViewStateEmptyEvent()
+        encryptionFormViewState = encryptionFormViewState.copy(
+            inProgress = false,
+            messageEncrypted = null,
+            messageDecrypted = null,
+            clearEvent = ViewStateEmptyEvent()
+        ),
+        errorEvent = null
     )
 
     private fun InFlightResult.reduce() = copy(
-        isLoading = true,
+        encryptionFormViewState = encryptionFormViewState.copy(
+            inProgress = true
+        ),
         errorEvent = null
     )
 
     private fun ErrorResult.reduce() = copy(
-        isLoading = false,
+        encryptionFormViewState = encryptionFormViewState.copy(
+            inProgress = false
+        ),
         errorEvent = ViewStateErrorEvent(error)
     )
 }

@@ -30,52 +30,41 @@ class SecretKeyActionProcessor: MviActionsProcessor<SecretKeyAction, SecretKeyRe
 
     private val checkKeyProcessor =
         createSecretKeyActionProcessor<CheckKeyAction> { action ->
-            val hasKey = getSecretKeyUseCase(action.keyAlias) != null
-            onNextSafe(if (hasKey) {
-                HasValidKeyResult(action.keyAlias)
+            val secretKey = getSecretKeyUseCase(action.keyAlias)
+            val result = if (secretKey != null) {
+                HasKeyResult(secretKey, action.keyAlias)
             } else {
-                NoValidKeyResult
-            })
+                NoKeyResult
+            }
+            onNextSafe(result)
             onCompleteSafe()
         }
 
     private val generateNewKeyProcessor =
         createSecretKeyActionProcessor<GenerateNewKeyAction> { action ->
-            generateSecretKeyUseCase(action.keyAlias)
-            onNextSafe(HasValidKeyResult(action.keyAlias))
+            val secretKey = generateSecretKeyUseCase(action.keyAlias)
+            onNextSafe(HasKeyResult(secretKey, action.keyAlias))
             onCompleteSafe()
         }
 
     private val removeKeyProcessor =
         createSecretKeyActionProcessor<RemoveKeyAction> { action ->
             removeSecretKeyUseCase(action.keyAlias)
-            onNextSafe(NoValidKeyResult)
+            onNextSafe(NoKeyResult)
             onCompleteSafe()
         }
 
     private val encryptMessageProcessor =
         createSecretKeyActionProcessor<EncryptMessageAction> { action ->
-            val secretKey = getSecretKeyUseCase(action.keyAlias)
-            if (secretKey != null) {
-                val messageEncrypted = encryptUseCase(action.messageToEncrypt, secretKey)
-                onNextSafe(EncryptMessageResult(action.keyAlias, messageEncrypted))
-            } else {
-                throw Exception("Secret key not generated for alias: ${action.keyAlias}")
-            }
+            val messageEncrypted = encryptUseCase(action.messageToEncrypt, action.secretKey)
+            onNextSafe(EncryptMessageResult(messageEncrypted))
             onCompleteSafe()
         }
 
     private val decryptMessageProcessor =
         createSecretKeyActionProcessor<DecryptMessageAction> { action ->
-            val secretKey = getSecretKeyUseCase(action.keyAlias)
-            if (secretKey != null) {
-                val messageDecrypted = decryptUseCase(action.messageToDecrypt, secretKey)
-                onNextSafe(
-                    DecryptMessageResult(action.keyAlias, action.messageToDecrypt, messageDecrypted)
-                )
-            } else {
-                throw Exception("Secret key not generated for alias: ${action.keyAlias}")
-            }
+            val messageDecrypted = decryptUseCase(action.messageToDecrypt, action.secretKey)
+            onNextSafe(DecryptMessageResult(messageDecrypted))
             onCompleteSafe()
         }
 

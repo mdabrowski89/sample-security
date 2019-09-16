@@ -3,6 +3,7 @@ package pl.mobite.sample.security.ui.components.secretkey
 import androidx.lifecycle.SavedStateHandle
 import pl.mobite.sample.security.ui.base.mvi.MviViewModel
 import pl.mobite.sample.security.ui.components.secretkey.mvi.SecretKeyAction
+import pl.mobite.sample.security.ui.components.secretkey.mvi.SecretKeyAction.*
 import pl.mobite.sample.security.ui.components.secretkey.mvi.SecretKeyActionProcessor
 import pl.mobite.sample.security.ui.components.secretkey.mvi.SecretKeyResult
 
@@ -16,27 +17,34 @@ class SecretKeyViewModel(
 ) {
 
     fun onStart() {
-        accept(SecretKeyAction.CheckKeyAction(KEY_ALIAS))
+        accept(CheckKeyAction(KEY_ALIAS))
     }
 
     fun generateNewKey() {
-        accept(SecretKeyAction.GenerateNewKeyAction(KEY_ALIAS))
+        accept(GenerateNewKeyAction(KEY_ALIAS))
     }
 
     fun removeKey() {
-        accept(SecretKeyAction.RemoveKeyAction(KEY_ALIAS))
+        accept(RemoveKeyAction(KEY_ALIAS))
     }
 
     fun encryptMessage(message: String) {
-        accept(SecretKeyAction.EncryptMessageAction(KEY_ALIAS, message))
+        val secretKey = viewState.secretKey
+        if (secretKey != null) {
+            accept(EncryptMessageAction(secretKey, message))
+        }
     }
 
-    fun decryptMessage(message: String) {
-        accept(SecretKeyAction.DecryptMessageAction(KEY_ALIAS, message))
+    fun decryptMessage() {
+        val messageToDecrypt = viewState.encryptionFormViewState.messageEncrypted
+        val secretKey = viewState.secretKey
+        if (secretKey != null && !messageToDecrypt.isNullOrEmpty()) {
+            accept(DecryptMessageAction(secretKey, messageToDecrypt))
+        }
     }
 
     fun clearMessage() {
-        accept(SecretKeyAction.ClearMessagesAction)
+        accept(ClearMessagesAction)
     }
 
     companion object {

@@ -8,7 +8,9 @@ import pl.mobite.sample.security.ui.base.mvi.ViewStateErrorEvent
 import pl.mobite.sample.security.ui.base.mvi.ViewStateNonParcelableEvent
 import pl.mobite.sample.security.ui.components.fingerprint.mvi.FingerprintResult
 import pl.mobite.sample.security.ui.components.fingerprint.mvi.FingerprintResult.*
+import pl.mobite.sample.security.ui.custom.encryptionform.EncryptionFormViewState
 import javax.crypto.Cipher
+import javax.crypto.SecretKey
 
 @Parcelize
 data class FingerprintViewState(
@@ -16,11 +18,9 @@ data class FingerprintViewState(
     val isHardwareAvailable: Boolean,
     val hasFingerprintEnrolled: Boolean,
     val isDeviceSecure: Boolean,
-    val inProgress: Boolean,
-    val secretKeyAlias: String?,
-    val messageEncrypted: String?,
-    val messageDecrypted: String?,
-    val clearEvent: ViewStateEmptyEvent?,
+    val encryptionFormViewState: EncryptionFormViewState,
+    val messageToEncrypt: String?,
+    val secretKey: SecretKey?,
     val errorEvent: ViewStateErrorEvent?
 ): MviViewState<FingerprintResult> {
 
@@ -36,11 +36,9 @@ data class FingerprintViewState(
             isHardwareAvailable = false,
             hasFingerprintEnrolled = false,
             isDeviceSecure = false,
-            inProgress = false,
-            secretKeyAlias = null,
-            messageEncrypted = null,
-            messageDecrypted = null,
-            clearEvent = null,
+            encryptionFormViewState = EncryptionFormViewState.default(),
+            messageToEncrypt = null,
+            secretKey = null,
             errorEvent = null
         )
     }
@@ -60,20 +58,26 @@ data class FingerprintViewState(
         }
     }
 
-    override fun isSavable() = !inProgress
+    override fun isSavable() = !encryptionFormViewState.inProgress
 
     private fun InFlightResult.reduce() = copy(
-        inProgress = true,
+        encryptionFormViewState = encryptionFormViewState.copy(
+            inProgress = true
+        ),
         errorEvent = null
     )
 
     private fun ErrorResult.reduce() = copy(
-        inProgress = false,
+        encryptionFormViewState = encryptionFormViewState.copy(
+            inProgress = false
+        ),
         errorEvent = ViewStateErrorEvent(t)
     )
 
     private fun CheckPreconditionsResult.reduce() = copy(
-        inProgress = false,
+        encryptionFormViewState = encryptionFormViewState.copy(
+            inProgress = false
+        ),
         errorEvent = null,
         isMarshmallow = this.isMarshmallow,
         isHardwareAvailable = this.hasFingerprintScanner,
@@ -81,56 +85,70 @@ data class FingerprintViewState(
         isDeviceSecure = this.isDeviceSecure
     )
     private fun HasValidKeyResult.reduce() = copy(
-        inProgress = false,
-        secretKeyAlias = keyAlias,
+        encryptionFormViewState = encryptionFormViewState.copy(
+            inProgress = false,
+            keyAlias = keyAlias
+        ),
+        secretKey = secretKey,
         errorEvent = null
     )
 
     private fun NoValidKeyResult.reduce() = copy(
-        inProgress = false,
-        secretKeyAlias = null,
-        messageEncrypted = null,
-        messageDecrypted = null,
-        errorEvent = null,
-        clearEvent = ViewStateEmptyEvent()
+        encryptionFormViewState = encryptionFormViewState.copy(
+            inProgress = false,
+            keyAlias = null,
+            messageEncrypted = null,
+            messageDecrypted = null,
+            clearEvent = ViewStateEmptyEvent()
+        ),
+        secretKey = null,
+        errorEvent = null
     )
 
     private fun EncryptionCipherReadyResult.reduce() = copy(
-        inProgress = false,
-        messageDecrypted = null,
+        encryptionFormViewState = encryptionFormViewState.copy(
+            inProgress = false,
+            messageDecrypted = null
+        ),
+        messageToEncrypt = messageToEncrypt,
         errorEvent = null
     ).apply {
-        encryptionCipherReadyEvent = ViewStateNonParcelableEvent(authenticatedCipher)
+        encryptionCipherReadyEvent = ViewStateNonParcelableEvent(encryptionCipher)
     }
 
     private fun EncryptMessageResult.reduce() = copy(
-        inProgress = false,
-        secretKeyAlias = keyAlias,
-        messageEncrypted = messageEncrypted,
-        messageDecrypted = null,
+        encryptionFormViewState = encryptionFormViewState.copy(
+            inProgress = false,
+            messageEncrypted = messageEncrypted,
+            messageDecrypted = null
+        ),
         errorEvent = null
     )
 
     private fun DecryptionCipherReadyResult.reduce() = copy(
-        inProgress = false,
+        encryptionFormViewState = encryptionFormViewState.copy(
+            inProgress = false
+        ),
         errorEvent = null
     ).apply {
-        decryptionCipherReadyEvent = ViewStateNonParcelableEvent(authenticatedCipher)
+        decryptionCipherReadyEvent = ViewStateNonParcelableEvent(decryptionCipher)
     }
 
     private fun DecryptMessageResult.reduce() = copy(
-        inProgress = false,
-        secretKeyAlias = keyAlias,
-        messageEncrypted = messageEncrypted,
-        messageDecrypted = messageDecrypted,
+        encryptionFormViewState = encryptionFormViewState.copy(
+            inProgress = false,
+            messageDecrypted = messageDecrypted
+        ),
         errorEvent = null
     )
 
     private fun ClearMessagesResult.reduce() = copy(
-        inProgress = false,
-        messageEncrypted = null,
-        messageDecrypted = null,
-        errorEvent = null,
-        clearEvent = ViewStateEmptyEvent()
+        encryptionFormViewState = encryptionFormViewState.copy(
+            inProgress = false,
+            messageEncrypted = null,
+            messageDecrypted = null,
+            clearEvent = ViewStateEmptyEvent()
+        ),
+        errorEvent = null
     )
 }

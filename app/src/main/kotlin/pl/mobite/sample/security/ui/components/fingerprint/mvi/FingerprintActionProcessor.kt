@@ -49,19 +49,15 @@ class FingerprintActionProcessor: MviActionsProcessor<FingerprintAction, Fingerp
                 isDeviceSecure = isDeviceSecure
             )
             onNextSafe(checkPreconditionsResult)
-            val hasKey = getSecretKeyUseCase(action.keyAlias) != null
-            onNextSafe(if (hasKey) {
-                HasValidKeyResult(action.keyAlias)
-            } else {
-                NoValidKeyResult
-            })
+            val result = getSecretKeyUseCase(action.keyAlias)?.let {HasValidKeyResult(it, action.keyAlias)} ?: NoValidKeyResult
+            onNextSafe(result)
             onCompleteSafe()
         }
 
     private val generateNewKeyProcessor =
         createFingerprintActionProcessor<GenerateNewKeyAction> { action ->
-            generateSecretKeyForFingerprintUseCase(action.keyAlias)
-            onNextSafe(HasValidKeyResult(action.keyAlias))
+            val secretKey = generateSecretKeyForFingerprintUseCase(action.keyAlias)
+            onNextSafe(HasValidKeyResult(secretKey, action.keyAlias))
             onCompleteSafe()
         }
 
@@ -74,46 +70,27 @@ class FingerprintActionProcessor: MviActionsProcessor<FingerprintAction, Fingerp
 
     private val prepareEncryptionCipherProcessor =
         createFingerprintActionProcessor<PrepareEncryptionCipherAction> { action ->
-            val secretKey = getSecretKeyUseCase(action.keyAlias)
-            if (secretKey != null) {
-                onNextSafe(EncryptionCipherReadyResult(getEncryptionCipherUseCase(secretKey)))
-            } else {
-                throw Exception("Secret key not generated for alias: ${action.keyAlias}")
-            }
+            onNextSafe(EncryptionCipherReadyResult(getEncryptionCipherUseCase(action.secretKey), action.messageToEncrypt))
             onCompleteSafe()
         }
 
     private val encryptMessageProcessor =
         createFingerprintActionProcessor<EncryptMessageAction> { action ->
-            val message = encryptWithFingerprintCipherUseCase(action.messageToEncrypt, action.authenticatedCipher)
-            val result = EncryptMessageResult(
-                keyAlias = action.keyAlias,
-                messageEncrypted = message
-            )
-            onNextSafe(result)
+            val messageEncrypted = encryptWithFingerprintCipherUseCase(action.messageToEncrypt, action.authenticatedCipher)
+            onNextSafe(EncryptMessageResult(messageEncrypted))
             onCompleteSafe()
         }
 
     private val prepareDecryptionCipherProcessor =
         createFingerprintActionProcessor<PrepareDecryptionCipherAction> { action ->
-            val secretKey = getSecretKeyUseCase(action.keyAlias)
-            if (secretKey != null) {
-                onNextSafe(DecryptionCipherReadyResult(getDecryptionCipherUseCase(secretKey)))
-            } else {
-                throw Exception("Secret key not generated for alias: ${action.keyAlias}")
-            }
+            onNextSafe(DecryptionCipherReadyResult(getDecryptionCipherUseCase(action.secretKey)))
             onCompleteSafe()
         }
 
     private val decryptMessageProcessor =
         createFingerprintActionProcessor<DecryptMessageAction> { action ->
-            val message = decryptWithFingerprintCipherUseCase(action.messageToDecrypt, action.authenticatedCipher)
-            val result = DecryptMessageResult(
-                keyAlias = action.keyAlias,
-                messageEncrypted = action.messageToDecrypt,
-                messageDecrypted = message
-            )
-            onNextSafe(result)
+            val messageDecrypted = decryptWithFingerprintCipherUseCase(action.messageToDecrypt, action.authenticatedCipher)
+            onNextSafe(DecryptMessageResult(messageDecrypted))
             onCompleteSafe()
         }
 

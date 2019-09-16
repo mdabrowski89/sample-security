@@ -13,7 +13,7 @@ import javax.crypto.SecretKey
 interface CheckFingerprintHardwareUseCase: () -> Boolean
 interface CheckFingerprintEnrolledUseCase: () -> Boolean
 interface CheckIfDeviceIsSecureUseCase: () -> Boolean
-interface GenerateSecretKeyForFingerprintUseCase: (String) -> Unit
+interface GenerateSecretKeyForFingerprintUseCase: (String) -> SecretKey
 interface GetEncryptionCipherUseCase: (SecretKey) -> Cipher
 interface GetDecryptionCipherUseCase: (SecretKey) -> Cipher
 interface EncryptWithFingerprintCipherUseCase: (String, Cipher) -> String
@@ -50,9 +50,9 @@ class GenerateSecretKeyForFingerprintUseCaseImpl(
     private val keystoreWrapper: KeystoreWrapper
 ): GenerateSecretKeyForFingerprintUseCase {
 
-    override fun invoke(alias: String) {
+    override fun invoke(alias: String): SecretKey {
         if (hasMarshmallow()) {
-            keystoreWrapper.generateSymmetricKeyApi23(alias, authenticationRequired = true)
+            return keystoreWrapper.generateSymmetricKeyApi23(alias, authenticationRequired = true)
         } else {
             throw Exception("Marshmallow required")
         }

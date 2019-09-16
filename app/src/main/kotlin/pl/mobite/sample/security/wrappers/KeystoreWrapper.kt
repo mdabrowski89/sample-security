@@ -75,14 +75,14 @@ class KeystoreWrapper(
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
-    fun generateSymmetricKeyApi23(alias: String, authenticationRequired: Boolean = false) {
+    fun generateSymmetricKeyApi23(alias: String, authenticationRequired: Boolean = false): SecretKey {
         val keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore")
         val builder = KeyGenParameterSpec.Builder(alias, KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT)
             .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
             .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7)
             .setUserAuthenticationRequired(authenticationRequired)
         keyGenerator.init(builder.build())
-        keyGenerator.generateKey()
+        return keyGenerator.generateKey()
     }
 
     fun generateDefaultSymmetricKey(): SecretKey {

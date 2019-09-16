@@ -2,6 +2,7 @@ package pl.mobite.sample.security.ui.components.fingerprint.mvi
 
 import pl.mobite.sample.security.ui.base.mvi.MviResult
 import javax.crypto.Cipher
+import javax.crypto.SecretKey
 
 
 sealed class FingerprintResult: MviResult {
@@ -17,18 +18,17 @@ sealed class FingerprintResult: MviResult {
         val isDeviceSecure: Boolean
     ): FingerprintResult()
 
-    data class HasValidKeyResult(val keyAlias: String): FingerprintResult()
+    data class HasValidKeyResult(val secretKey: SecretKey, val keyAlias: String): FingerprintResult()
 
     object NoValidKeyResult: FingerprintResult()
 
-    data class EncryptionCipherReadyResult(val authenticatedCipher: Cipher): FingerprintResult()
+    data class EncryptionCipherReadyResult(val encryptionCipher: Cipher, val messageToEncrypt: String): FingerprintResult()
 
-    data class EncryptMessageResult(val keyAlias: String, val messageEncrypted: String): FingerprintResult()
+    data class EncryptMessageResult(val messageEncrypted: String): FingerprintResult()
 
-    data class DecryptionCipherReadyResult(val authenticatedCipher: Cipher): FingerprintResult()
+    data class DecryptionCipherReadyResult(val decryptionCipher: Cipher): FingerprintResult()
 
-    data class DecryptMessageResult(val keyAlias: String, val messageEncrypted: String, val messageDecrypted: String):
-        FingerprintResult()
+    data class DecryptMessageResult(val messageDecrypted: String): FingerprintResult()
 
     object ClearMessagesResult: FingerprintResult()
 }
