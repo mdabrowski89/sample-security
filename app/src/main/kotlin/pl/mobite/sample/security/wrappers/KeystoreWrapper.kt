@@ -64,14 +64,20 @@ class KeystoreWrapper(
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
-    fun generateAsymmetricKeyApi23(alias: String) {
+    fun generateAsymmetricKeyApi23(
+        alias: String,
+        authenticationRequired: Boolean = false,
+        validityDuration: Int = 0
+    ): KeyPair {
         val generator = KeyPairGenerator.getInstance("RSA", "AndroidKeyStore")
         val purpose = KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
         val builder = KeyGenParameterSpec.Builder(alias, purpose)
             .setBlockModes(KeyProperties.BLOCK_MODE_ECB)
             .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_RSA_PKCS1)
+            .setUserAuthenticationRequired(authenticationRequired)
+            .setUserAuthenticationValidityDurationSeconds(validityDuration)
         generator.initialize(builder.build())
-        generator.generateKeyPair()
+        return generator.generateKeyPair()
     }
 
     @RequiresApi(Build.VERSION_CODES.M)

@@ -34,11 +34,13 @@ class FingerprintUiHelper
 /**
  * Constructor for [FingerprintUiHelper].
  */
-internal constructor(private val fingerprintMgr: FingerprintManager,
-        private val icon: ImageView,
-        private val errorTextView: TextView,
-        private val callback: Callback
-) : FingerprintManager.AuthenticationCallback() {
+internal constructor(
+    private val fingerprintMgr: FingerprintManager,
+    private val icon: ImageView,
+    private val errorTextView: TextView,
+    private val cryptoObject: FingerprintManager.CryptoObject,
+    private val callback: Callback
+): FingerprintManager.AuthenticationCallback() {
 
     private var cancellationSignal: CancellationSignal? = null
     private var selfCancelled = false
@@ -58,7 +60,7 @@ internal constructor(private val fingerprintMgr: FingerprintManager,
         if (!isFingerprintAuthAvailable) return
         cancellationSignal = CancellationSignal()
         selfCancelled = false
-        fingerprintMgr.authenticate(null, cancellationSignal, 0, this, null)
+        fingerprintMgr.authenticate(cryptoObject, cancellationSignal, 0, this, null)
         icon.setImageResource(R.drawable.ic_fp_40px)
     }
 
@@ -78,10 +80,10 @@ internal constructor(private val fingerprintMgr: FingerprintManager,
     }
 
     override fun onAuthenticationHelp(helpMsgId: Int, helpString: CharSequence) =
-            showError(helpString)
+        showError(helpString)
 
     override fun onAuthenticationFailed() =
-            showError(icon.resources.getString(R.string.fingerprint_not_recognized))
+        showError(icon.resources.getString(R.string.fingerprint_not_recognized))
 
     override fun onAuthenticationSucceeded(result: FingerprintManager.AuthenticationResult?) {
         errorTextView.run {

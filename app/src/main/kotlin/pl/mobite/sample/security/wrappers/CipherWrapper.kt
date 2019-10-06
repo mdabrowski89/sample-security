@@ -3,6 +3,7 @@ package pl.mobite.sample.security.wrappers
 import android.util.Base64
 import java.security.Key
 import java.security.KeyPair
+import java.security.PublicKey
 import javax.crypto.Cipher
 import javax.crypto.SecretKey
 import javax.crypto.spec.IvParameterSpec
@@ -10,11 +11,13 @@ import javax.crypto.spec.IvParameterSpec
 
 class CipherWrapper {
 
-    fun encrypt(message: String, keyPair: KeyPair): String {
+    fun encrypt(message: String, key: PublicKey): EncryptionResult {
         val cipher = Cipher.getInstance(TRANSFORMATION_RSA)
-        cipher.init(Cipher.ENCRYPT_MODE, keyPair.public)
+        cipher.init(Cipher.ENCRYPT_MODE, key)
         val bytes = cipher.doFinal(message.toByteArray())
-        return Base64.encodeToString(bytes, Base64.DEFAULT)
+        val encryptedMessage = Base64.encodeToString(bytes, Base64.DEFAULT)
+        val initializationVector = Base64.encodeToString(cipher.iv, Base64.DEFAULT)
+        return EncryptionResult(encryptedMessage, initializationVector)
     }
 
     fun decrypt(message: String, keyPair: KeyPair): String {
@@ -71,10 +74,10 @@ class CipherWrapper {
         return cipher
     }
 
-    fun getDecryptionCipher(secretKey: SecretKey, initializationVector: String): Cipher {
+    fun getDecryptionCipher(key: Key, initializationVector: String): Cipher {
         val cipher: Cipher = Cipher.getInstance(TRANSFORMATION_AES)
         val iv = Base64.decode(initializationVector, Base64.DEFAULT)
-        cipher.init(Cipher.DECRYPT_MODE, secretKey, IvParameterSpec(iv))
+        cipher.init(Cipher.DECRYPT_MODE, key, IvParameterSpec(iv))
         return cipher
     }
 

@@ -14,11 +14,11 @@ val fingerprintUseCasesModule = module {
 
     factory<GenerateSecretKeyForFingerprintUseCase> { GenerateSecretKeyForFingerprintUseCaseImpl(get()) }
 
-    factory<GetEncryptionCipherUseCase> { GetEncryptionCipherUseCaseImpl(get()) }
+    factory<GetAESEncryptionCipherUseCase> { GetAESEncryptionCipherUseCaseImpl(get()) }
 
     factory<EncryptWithFingerprintCipherUseCase> { EncryptWithFingerprintCipherUseCaseImpl(get(), get()) }
 
-    factory<GetDecryptionCipherUseCase> { GetDecryptionCipherUseCaseImpl(get(), get()) }
+    factory<GetAESDecryptionCipherUseCase> { GetAESDecryptionCipherUseCaseImpl(get(), get()) }
 
     factory<DecryptWithFingerprintCipherUseCase> { DecryptWithFingerprintCipherUseCaseImpl(get()) }
 }

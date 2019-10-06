@@ -2,13 +2,13 @@ object VersionsCore {
 
     const val gradle = "3.5.0"
 
-    const val kotlin = "1.3.50"
-    const val kotlinCoroutines = "1.0.1"
+    const val kotlin = "1.3.41"
+    const val kotlinCoroutines = "1.3.2"
 
-    const val rxAndroid = "2.1.0"
-    const val rxKotlin = "2.3.0"
-    const val rxBinding = "2.1.1"
-    const val rxRelay = "2.1.0"
+    const val rxAndroid = "2.1.1"
+    const val rxKotlin = "2.4.0"
+    const val rxBinding = "3.0.0"
+    const val rxRelay = "2.1.1"
 
     const val retrofit = "2.4.0"
     const val retrofitOkHttp = "3.12.0"
@@ -16,8 +16,8 @@ object VersionsCore {
 
     const val gson = "2.8.2"
 
-    const val koin = "2.0.0"
-    const val dagger = "2.16"
+    const val koin = "2.0.1"
+    const val dagger = "2.24"
 }
 
 object DependenciesCore {

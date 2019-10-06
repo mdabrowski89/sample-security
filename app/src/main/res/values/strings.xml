@@ -30,7 +30,7 @@
     <string name="fingerprint_description">You can generate secret key which will be secured with the user fingerprint, and use this key to encrypt/decrypt the message</string>
     <string name="fingerprint_error_pre_marshmallow">Feature available from Android Marshmallow</string>
     <string name="fingerprint_error_missing_hardware">Fingerprint scanner is missing on your device</string>
-    <string name="fingerprint_error_missing_fingerprints">You mast enroll at least one fingerprint</string>
+    <string name="fingerprint_error_missing_fingerprints">You must enroll at least one fingerprint</string>
     <string name="fingerprint_error_device_is_not_secure">Your device needs to be secured with fingerprint</string>
     <string name="fingerprint_confirmation_title">Confirm operation</string>
     <string name="fingerprint_confirmation_negative_button">Cancel</string>

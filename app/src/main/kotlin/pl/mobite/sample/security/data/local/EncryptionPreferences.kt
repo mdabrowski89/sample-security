@@ -12,4 +12,6 @@ class EncryptionPreferences(
     var secretKeyIv by sharedPrefs.string("secretKeyIv", null)
 
     var fingerprintIv by sharedPrefs.string("fingerprintIv", null)
+
+    var pinIv by sharedPrefs.string("pinIv", null)
 }

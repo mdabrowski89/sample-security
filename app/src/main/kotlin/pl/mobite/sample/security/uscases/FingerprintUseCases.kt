@@ -14,8 +14,8 @@ interface CheckFingerprintHardwareUseCase: () -> Boolean
 interface CheckFingerprintEnrolledUseCase: () -> Boolean
 interface CheckIfDeviceIsSecureUseCase: () -> Boolean
 interface GenerateSecretKeyForFingerprintUseCase: (String) -> SecretKey
-interface GetEncryptionCipherUseCase: (SecretKey) -> Cipher
-interface GetDecryptionCipherUseCase: (SecretKey) -> Cipher
+interface GetAESEncryptionCipherUseCase: (SecretKey) -> Cipher
+interface GetAESDecryptionCipherUseCase: (SecretKey) -> Cipher
 interface EncryptWithFingerprintCipherUseCase: (String, Cipher) -> String
 interface DecryptWithFingerprintCipherUseCase: (String, Cipher) -> String
 
@@ -59,19 +59,19 @@ class GenerateSecretKeyForFingerprintUseCaseImpl(
     }
 }
 
-class GetEncryptionCipherUseCaseImpl(
+class GetAESEncryptionCipherUseCaseImpl(
     private val cipherWrapper: CipherWrapper
-): GetEncryptionCipherUseCase {
+): GetAESEncryptionCipherUseCase {
 
     override fun invoke(secretKey: SecretKey): Cipher {
         return cipherWrapper.getEncryptionCipher(secretKey)
     }
 }
 
-class GetDecryptionCipherUseCaseImpl(
+class GetAESDecryptionCipherUseCaseImpl(
     private val cipherWrapper: CipherWrapper,
     private val encryptionPreferences: EncryptionPreferences
-): GetDecryptionCipherUseCase {
+): GetAESDecryptionCipherUseCase {
 
     override fun invoke(secretKey: SecretKey): Cipher {
         val initializationVector = encryptionPreferences.fingerprintIv ?: throw Exception("Missing initialization vector")

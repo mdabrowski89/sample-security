@@ -36,7 +36,7 @@ import javax.crypto.Cipher
 @RequiresApi(Build.VERSION_CODES.M)
 class FingerprintAuthenticationDialogFragment(
     private val cipher: Cipher
-) : DialogFragment(), FingerprintUiHelper.Callback {
+): DialogFragment(), FingerprintUiHelper.Callback {
 
     private lateinit var cancelButton: Button
     private lateinit var fingerprintContainer: View
@@ -52,9 +52,10 @@ class FingerprintAuthenticationDialogFragment(
         setStyle(STYLE_NORMAL, android.R.style.Theme_Material_Light_Dialog)
     }
 
-    override fun onCreateView(inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
         dialog?.setTitle(getString(R.string.fingerprint_confirmation_title))
         return inflater.inflate(R.layout.fingerprint_dialog_container, container, false)
@@ -69,18 +70,24 @@ class FingerprintAuthenticationDialogFragment(
         cancelButton.setOnClickListener { dismiss() }
 
         fingerprintUiHelper = FingerprintUiHelper(
-                fingerprintMgr = requireActivity().getSystemService(FingerprintManager::class.java),
-                icon = view.findViewById(R.id.fingerprint_icon),
-                errorTextView = view.findViewById(R.id.fingerprint_status),
-                callback = this
+            fingerprintMgr = requireActivity().getSystemService(FingerprintManager::class.java),
+            icon = view.findViewById(R.id.fingerprint_icon),
+            errorTextView = view.findViewById(R.id.fingerprint_status),
+            cryptoObject = FingerprintManager.CryptoObject(cipher),
+            callback = this
         )
 
         // If fingerprint authentication is not available, switch immediately to the backup
         // (password) screen.
         if (!fingerprintUiHelper.isFingerprintAuthAvailable) {
-            Toast.makeText(requireContext(), "Fingerprint not available on this device", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                requireContext(),
+                "Fingerprint not available on this device",
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
+
     override fun onResume() {
         super.onResume()
         fingerprintUiHelper.startListening()
