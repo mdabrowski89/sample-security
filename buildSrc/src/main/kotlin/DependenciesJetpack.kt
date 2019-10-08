@@ -1,10 +1,10 @@
 object VersionsJetpack {
 
-    const val androidxLifecycleSavedState = "1.0.0-alpha02"
     const val androidxCoreKtx = "1.1.0"
     const val androidxAppcompat = "1.1.0"
     const val androidxRoom = "2.1.0"
     const val androidxLifecycle = "2.1.0"
+    const val androidxLifecycleSavedState = "1.0.0-alpha05"
     const val androidxNavigation = "2.1.0"
     const val androidxWorkManager = "2.2.0"
 
@@ -12,17 +12,6 @@ object VersionsJetpack {
     const val androidxMaterial = "1.0.0"
     const val androidxConstraintLayout = "2.0.0-beta2"
     const val androidxLegacySupport = "1.0.0"
-
-    const val playServiceMaps = "15.0.1"
-    const val playServices = "16.0.0"
-
-    const val mapsUtils = "0.5+"
-
-    const val firebaseMessaging = "17.6.0"
-
-    const val googleServices = "4.2.0"
-
-    const val multidex = "1.0.3"
 }
 
 object DependenciesJetpack {
@@ -54,15 +43,4 @@ object DependenciesJetpack {
     const val androidxMaterialLib = "com.google.android.material:material:${VersionsJetpack.androidxMaterial}"
     const val androidxConstraintLayoutLib = "androidx.constraintlayout:constraintlayout:${VersionsJetpack.androidxConstraintLayout}"
     const val androidxLegacySupportLib = "androidx.legacy:legacy-support-v4:${VersionsJetpack.androidxLegacySupport}"
-
-    const val playServiceMapsLib = "com.google.android.gms:play-services-maps:${VersionsJetpack.playServiceMaps}"
-    const val playServicesLocation = "com.google.android.gms:play-services-location:${VersionsJetpack.playServices}"
-
-    const val mapsUtilsLib = "com.google.maps.android:android-maps-utils:${VersionsJetpack.mapsUtils}"
-
-    const val firebaseMessagingLib = "com.google.firebase:firebase-messaging:${VersionsJetpack.firebaseMessaging}"
-
-    const val googleServices = "com.google.gms:google-services:${VersionsJetpack.googleServices}"
-
-    const val multidexLib = "com.android.support:multidex:${VersionsJetpack.multidex}"
 }

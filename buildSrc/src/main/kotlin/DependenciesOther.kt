@@ -1,6 +1,6 @@
 object VersionsOther {
 
-    const val crashlitics = "2.9.7@aar"
+    const val crashlytics = "2.9.7@aar"
 
     const val permissionDispatcher = "4.3.0"
 
@@ -23,12 +23,14 @@ object VersionsOther {
     const val regula = "+@aar"
     const val smartCropper = "v1.2.3@aar"
     
-    const val radix="0.11.7"
+    const val radix = "0.11.7"
+
+    const val realm = "5.13.0"
 }
 
 object DependenciesOther {
 
-    const val crashliticsLib = "com.crashlytics.sdk.android:crashlytics:${VersionsOther.crashlitics}"
+    const val crashlyticsLib = "com.crashlytics.sdk.android:crashlytics:${VersionsOther.crashlytics}"
 
     const val fabricGradlePlugin = "io.fabric.tools:gradle:1.+"
 
@@ -60,4 +62,6 @@ object DependenciesOther {
     const val smartCropperLib = "com.github.pqpo:SmartCropper:${VersionsOther.smartCropper}"
     
     const val radixLib = "com.radixdlt:radixdlt-kotlin:${VersionsOther.radix}"
+
+    const val realmGradlePlugin = "io.realm:realm-gradle-plugin:${VersionsOther.realm}"
 }

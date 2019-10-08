@@ -10,6 +10,7 @@ import com.jakewharton.rxrelay2.PublishRelay
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
 import io.reactivex.disposables.Disposable
+import pl.mobite.sample.security.SecurityApp
 
 
 abstract class MviViewModel<A: MviAction, R: MviResult, VS: MviViewState<R>>(
@@ -66,7 +67,7 @@ abstract class MviViewModel<A: MviAction, R: MviResult, VS: MviViewState<R>>(
 }
 
 fun <VM: MviViewModel<*, *, *>> Fragment.provide(viewModelClass: Class<VM>) =
-    ViewModelProviders.of(this, SavedStateViewModelFactory(this)).get(viewModelClass)
+    ViewModelProviders.of(this, SavedStateViewModelFactory(SecurityApp.instance, this)).get(viewModelClass)
 
 fun <VM: MviViewModel<*, *, *>> FragmentActivity.provide(viewModelClass: Class<VM>) =
-    ViewModelProviders.of(this, SavedStateViewModelFactory(this)).get(viewModelClass)
+    ViewModelProviders.of(this, SavedStateViewModelFactory(SecurityApp.instance, this)).get(viewModelClass)
