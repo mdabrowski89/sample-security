@@ -2,7 +2,6 @@ package pl.mobite.sample.security.ui.components.pin.mvi
 
 import pl.mobite.sample.security.ui.base.mvi.MviResult
 import java.security.KeyPair
-import javax.crypto.Cipher
 
 
 sealed class PinResult: MviResult {
@@ -22,7 +21,7 @@ sealed class PinResult: MviResult {
 
     data class EncryptMessageResult(val messageEncrypted: String): PinResult()
 
-    data class DecryptionCipherReadyResult(val decryptionCipher: Cipher): PinResult()
+    object AuthenticationRequiredResult: PinResult()
 
     data class DecryptMessageResult(val messageDecrypted: String): PinResult()
 

@@ -10,9 +10,7 @@ val pinUseCasesModule = module {
 
     factory<GetKeyForPinUseCase> { GetKeyForPinUseCaseImpl(get()) }
 
-    factory<GetRSADecryptionCipherUseCase> { GetRSADecryptionCipherUseCaseImpl(get(), get()) }
+    factory<EncryptWithPinUseCase> { EncryptWithPinUseCaseImpl(get()) }
 
-    factory<EncryptWithPinUseCase> { EncryptWithPinUseCaseImpl(get(), get()) }
-
-    factory<DecryptWithPinCipherUseCase> { DecryptWithPinCipherUseCaseImpl(get()) }
+    factory<DecryptWithPinUseCase> { DecryptWithPinUseCaseImpl(get()) }
 }

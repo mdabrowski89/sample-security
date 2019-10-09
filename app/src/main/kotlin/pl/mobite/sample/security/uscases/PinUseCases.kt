@@ -1,20 +1,17 @@
 package pl.mobite.sample.security.uscases
 
-import pl.mobite.sample.security.data.local.EncryptionPreferences
 import pl.mobite.sample.security.utils.hasMarshmallow
 import pl.mobite.sample.security.wrappers.CipherWrapper
 import pl.mobite.sample.security.wrappers.KeystoreWrapper
 import java.security.KeyPair
 import java.security.PrivateKey
 import java.security.PublicKey
-import javax.crypto.Cipher
 
 
 interface GenerateKeyForPinUseCase: (String) -> KeyPair
 interface GetKeyForPinUseCase: (String) -> KeyPair?
-interface GetRSADecryptionCipherUseCase: (PrivateKey) -> Cipher
 interface EncryptWithPinUseCase: (String, PublicKey) -> String
-interface DecryptWithPinCipherUseCase: (String, Cipher) -> String
+interface DecryptWithPinUseCase: (String, PrivateKey) -> String
 
 class GenerateKeyForPinUseCaseImpl(
     private val keystoreWrapper: KeystoreWrapper
@@ -46,35 +43,20 @@ class GetKeyForPinUseCaseImpl(
     }
 }
 
-class GetRSADecryptionCipherUseCaseImpl(
-    private val cipherWrapper: CipherWrapper,
-    private val encryptionPreferences: EncryptionPreferences
-): GetRSADecryptionCipherUseCase {
-
-    override fun invoke(privateKey: PrivateKey): Cipher {
-        val initializationVector = encryptionPreferences.pinIv ?: throw Exception("Missing initialization vector")
-        return cipherWrapper.getDecryptionCipher(privateKey, initializationVector)
-    }
-}
-
-
 class EncryptWithPinUseCaseImpl(
-    private val cipherWrapper: CipherWrapper,
-    private val encryptionPreferences: EncryptionPreferences
+    private val cipherWrapper: CipherWrapper
 ): EncryptWithPinUseCase {
 
     override fun invoke(message: String, key: PublicKey): String {
-        val (encryptedMessage, initializationVector) = cipherWrapper.encrypt(message, key)
-        encryptionPreferences.pinIv = initializationVector
-        return encryptedMessage
+        return cipherWrapper.encrypt(message, key)
     }
 }
 
-class DecryptWithPinCipherUseCaseImpl(
+class DecryptWithPinUseCaseImpl(
     private val cipherWrapper: CipherWrapper
-): DecryptWithPinCipherUseCase {
+): DecryptWithPinUseCase {
 
-    override fun invoke(message: String, cipher: Cipher): String {
-        return cipherWrapper.decrypt(message, cipher)
+    override fun invoke(message: String, key: PrivateKey): String {
+        return cipherWrapper.decrypt(message, key)
     }
 }

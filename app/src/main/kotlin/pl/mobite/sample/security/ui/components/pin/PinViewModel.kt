@@ -6,7 +6,6 @@ import pl.mobite.sample.security.ui.components.pin.mvi.PinAction
 import pl.mobite.sample.security.ui.components.pin.mvi.PinAction.*
 import pl.mobite.sample.security.ui.components.pin.mvi.PinActionProcessor
 import pl.mobite.sample.security.ui.components.pin.mvi.PinResult
-import javax.crypto.Cipher
 
 
 class PinViewModel(
@@ -34,18 +33,23 @@ class PinViewModel(
     }
 
     fun decryptMessage() {
-        viewState.keyPair?.private?.let { accept(PrepareDecryptionCipherAction(it))  }
+        decryptMessage(authenticateIfNeeded = true)
     }
 
-    fun onDecryptionCipherReady(authenticatedCipher: Cipher) {
-        val messageToDecrypt = viewState.encryptionFormViewState.messageEncrypted
-        if (messageToDecrypt != null) {
-            accept(DecryptMessageAction(authenticatedCipher, messageToDecrypt))
-        }
+    fun onUserAuthenticated() {
+        decryptMessage(authenticateIfNeeded = false)
     }
 
     fun clearMessage() {
         accept(ClearMessagesAction)
+    }
+
+    private fun decryptMessage(authenticateIfNeeded: Boolean) {
+        val privateKey = viewState.keyPair?.private
+        val messageToDecrypt = viewState.encryptionFormViewState.messageEncrypted
+        if (privateKey != null && messageToDecrypt != null) {
+            accept(DecryptMessageAction(privateKey, messageToDecrypt, authenticateIfNeeded))
+        }
     }
 
     companion object {

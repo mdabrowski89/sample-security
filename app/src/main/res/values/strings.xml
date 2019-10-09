@@ -45,6 +45,7 @@
     <!-- Pin fragment -->
     <string name="pin_nav_item_title">Pin</string>
     <string name="pin_screen_title">@string/pin_nav_item_title</string>
-    <string name="pin_description">You can generate secret key which will be secured with the pin, and use this key to encrypt/decrypt the message</string>
+    <string name="pin_description">You can generate private and public key pair which will be secured with the pin, and use it to encrypt/decrypt the message</string>
+    <string name="pin_keyguard_description">Authenticate in order to decrypt the message</string>
 
 </resources>

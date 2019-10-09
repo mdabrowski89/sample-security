@@ -1,5 +1,6 @@
 package pl.mobite.sample.security.ui.components.pin.mvi
 
+import android.security.keystore.UserNotAuthenticatedException
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import org.koin.core.KoinComponent
@@ -19,15 +20,13 @@ class PinActionProcessor: MviActionsProcessor<PinAction, PinResult>(), KoinCompo
     private val generateKeyForPinUseCase: GenerateKeyForPinUseCase by inject()
     private val removeSecretKeyUseCase: RemoveSecretKeyUseCase by inject()
     private val encryptWithPinUseCase: EncryptWithPinUseCase by inject()
-    private val getRSADecryptionCipherUseCase: GetRSADecryptionCipherUseCase by inject()
-    private val decryptWithPinCipherUseCase: DecryptWithPinCipherUseCase by inject()
+    private val decryptWithPinUseCase: DecryptWithPinUseCase by inject()
 
     override fun getActionProcessors(shared: Observable<PinAction>) = listOf(
         shared.connect(checkPreconditionsProcessor),
         shared.connect(generateNewKeyProcessor),
         shared.connect(removeKeyProcessor),
         shared.connect(encryptMessageProcessor),
-        shared.connect(prepareDecryptionCipherProcessor),
         shared.connect(decryptMessageProcessor),
         shared.connect(clearMessagesProcessor)
     )
@@ -67,16 +66,18 @@ class PinActionProcessor: MviActionsProcessor<PinAction, PinResult>(), KoinCompo
             onCompleteSafe()
         }
 
-    private val prepareDecryptionCipherProcessor =
-        createFingerprintActionProcessor<PrepareDecryptionCipherAction> { action ->
-            onNextSafe(DecryptionCipherReadyResult(getRSADecryptionCipherUseCase(action.privateKey)))
-            onCompleteSafe()
-        }
-
     private val decryptMessageProcessor =
         createFingerprintActionProcessor<DecryptMessageAction> { action ->
-            val messageDecrypted = decryptWithPinCipherUseCase(action.messageToDecrypt, action.authenticatedCipher)
-            onNextSafe(DecryptMessageResult(messageDecrypted))
+            try {
+                val messageDecrypted = decryptWithPinUseCase(action.messageToDecrypt, action.privateKey)
+                onNextSafe(DecryptMessageResult(messageDecrypted))
+            } catch (t: Throwable) {
+                if (action.authenticateIfNeeded && hasMarshmallow() && t is UserNotAuthenticatedException) {
+                    onNextSafe(AuthenticationRequiredResult)
+                } else {
+                    onNextSafe(ErrorResult(t))
+                }
+            }
             onCompleteSafe()
         }
 

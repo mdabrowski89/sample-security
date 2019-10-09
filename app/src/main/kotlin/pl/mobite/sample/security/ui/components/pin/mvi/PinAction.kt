@@ -3,7 +3,6 @@ package pl.mobite.sample.security.ui.components.pin.mvi
 import pl.mobite.sample.security.ui.base.mvi.MviAction
 import java.security.PrivateKey
 import java.security.PublicKey
-import javax.crypto.Cipher
 
 
 sealed class PinAction: MviAction {
@@ -16,9 +15,7 @@ sealed class PinAction: MviAction {
 
     data class EncryptMessageAction(val publicKey: PublicKey, val messageToEncrypt: String): PinAction()
 
-    data class PrepareDecryptionCipherAction(val privateKey: PrivateKey): PinAction()
-
-    data class DecryptMessageAction(val authenticatedCipher: Cipher, val messageToDecrypt: String): PinAction()
+    data class DecryptMessageAction(val privateKey: PrivateKey, val messageToDecrypt: String, val authenticateIfNeeded: Boolean): PinAction()
 
     object ClearMessagesAction: PinAction()
 }

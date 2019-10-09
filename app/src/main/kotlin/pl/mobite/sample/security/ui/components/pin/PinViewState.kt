@@ -1,16 +1,13 @@
 package pl.mobite.sample.security.ui.components.pin
 
-import kotlinx.android.parcel.IgnoredOnParcel
 import kotlinx.android.parcel.Parcelize
 import pl.mobite.sample.security.ui.base.mvi.MviViewState
 import pl.mobite.sample.security.ui.base.mvi.ViewStateEmptyEvent
 import pl.mobite.sample.security.ui.base.mvi.ViewStateErrorEvent
-import pl.mobite.sample.security.ui.base.mvi.ViewStateNonParcelableEvent
 import pl.mobite.sample.security.ui.components.pin.mvi.PinResult
 import pl.mobite.sample.security.ui.components.pin.mvi.PinResult.*
 import pl.mobite.sample.security.ui.custom.encryptionform.EncryptionFormViewState
 import java.security.KeyPair
-import javax.crypto.Cipher
 
 @Parcelize
 data class PinViewState(
@@ -19,11 +16,9 @@ data class PinViewState(
     val encryptionFormViewState: EncryptionFormViewState,
     val messageToEncrypt: String?,
     val keyPair: KeyPair?,
-    val errorEvent: ViewStateErrorEvent?
+    val errorEvent: ViewStateErrorEvent?,
+    val authenticationRequired: ViewStateEmptyEvent?
 ): MviViewState<PinResult> {
-
-    @IgnoredOnParcel
-    var decryptionCipherReadyEvent: ViewStateNonParcelableEvent<Cipher>? = null
 
     companion object {
 
@@ -33,7 +28,8 @@ data class PinViewState(
             encryptionFormViewState = EncryptionFormViewState.default(),
             messageToEncrypt = null,
             keyPair = null,
-            errorEvent = null
+            errorEvent = null,
+            authenticationRequired = null
         )
     }
 
@@ -45,7 +41,7 @@ data class PinViewState(
             is HasValidKeyResult -> result.reduce()
             is NoValidKeyResult -> result.reduce()
             is EncryptMessageResult -> result.reduce()
-            is DecryptionCipherReadyResult -> result.reduce()
+            is AuthenticationRequiredResult -> result.reduce()
             is DecryptMessageResult -> result.reduce()
             is ClearMessagesResult -> result.reduce()
         }
@@ -105,14 +101,13 @@ data class PinViewState(
         errorEvent = null
     )
 
-    private fun DecryptionCipherReadyResult.reduce() = copy(
+    private fun AuthenticationRequiredResult.reduce() = copy(
         encryptionFormViewState = encryptionFormViewState.copy(
             inProgress = false
         ),
-        errorEvent = null
-    ).apply {
-        decryptionCipherReadyEvent = ViewStateNonParcelableEvent(decryptionCipher)
-    }
+        errorEvent = null,
+        authenticationRequired = ViewStateEmptyEvent()
+    )
 
     private fun DecryptMessageResult.reduce() = copy(
         encryptionFormViewState = encryptionFormViewState.copy(

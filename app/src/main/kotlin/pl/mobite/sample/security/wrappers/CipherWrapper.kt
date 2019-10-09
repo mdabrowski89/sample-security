@@ -2,7 +2,7 @@ package pl.mobite.sample.security.wrappers
 
 import android.util.Base64
 import java.security.Key
-import java.security.KeyPair
+import java.security.PrivateKey
 import java.security.PublicKey
 import javax.crypto.Cipher
 import javax.crypto.SecretKey
@@ -11,18 +11,16 @@ import javax.crypto.spec.IvParameterSpec
 
 class CipherWrapper {
 
-    fun encrypt(message: String, key: PublicKey): EncryptionResult {
+    fun encrypt(message: String, key: PublicKey): String {
         val cipher = Cipher.getInstance(TRANSFORMATION_RSA)
         cipher.init(Cipher.ENCRYPT_MODE, key)
         val bytes = cipher.doFinal(message.toByteArray())
-        val encryptedMessage = Base64.encodeToString(bytes, Base64.DEFAULT)
-        val initializationVector = Base64.encodeToString(cipher.iv, Base64.DEFAULT)
-        return EncryptionResult(encryptedMessage, initializationVector)
+        return Base64.encodeToString(bytes, Base64.DEFAULT)
     }
 
-    fun decrypt(message: String, keyPair: KeyPair): String {
+    fun decrypt(message: String, key: PrivateKey): String {
         val cipher = Cipher.getInstance(TRANSFORMATION_RSA)
-        cipher.init(Cipher.DECRYPT_MODE, keyPair.private)
+        cipher.init(Cipher.DECRYPT_MODE, key)
         val encryptedData = Base64.decode(message, Base64.DEFAULT)
         val decodedData = cipher.doFinal(encryptedData)
         return String(decodedData)
@@ -81,6 +79,11 @@ class CipherWrapper {
         return cipher
     }
 
+    fun getDecryptionCipher(key: Key): Cipher {
+        val cipher: Cipher = Cipher.getInstance(TRANSFORMATION_RSA)
+        cipher.init(Cipher.DECRYPT_MODE, key)
+        return cipher
+    }
     data class EncryptionResult(val encryptedMessage: String, val initializationVector: String)
 
     companion object {
