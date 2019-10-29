@@ -2,15 +2,18 @@ object VersionsJetpack {
 
     const val androidxCoreKtx = "1.1.0"
     const val androidxAppcompat = "1.1.0"
-    const val androidxRoom = "2.1.0"
+    const val androidxRoom = "2.2.1"
     const val androidxLifecycle = "2.1.0"
     const val androidxLifecycleSavedState = "1.0.0-alpha05"
     const val androidxNavigation = "2.1.0"
     const val androidxWorkManager = "2.2.0"
+    const val androidxCamera = "1.0.0-alpha06"
+    const val androidxCameraView = "1.0.0-alpha03"
+    const val androidxCameraExt = "1.0.0-alpha03"
 
     const val androidx = "1.0.0"
     const val androidxMaterial = "1.0.0"
-    const val androidxConstraintLayout = "2.0.0-beta2"
+    const val androidxConstraintLayout = "2.0.0-beta3"
     const val androidxLegacySupport = "1.0.0"
 }
 
@@ -43,4 +46,9 @@ object DependenciesJetpack {
     const val androidxMaterialLib = "com.google.android.material:material:${VersionsJetpack.androidxMaterial}"
     const val androidxConstraintLayoutLib = "androidx.constraintlayout:constraintlayout:${VersionsJetpack.androidxConstraintLayout}"
     const val androidxLegacySupportLib = "androidx.legacy:legacy-support-v4:${VersionsJetpack.androidxLegacySupport}"
+
+    const val androidxCameraCoreLib = "androidx.camera:camera-core:${VersionsJetpack.androidxCamera}"
+    const val androidxCamera2Lib = "androidx.camera:camera-camera2:${VersionsJetpack.androidxCamera}"
+    const val androidxCameraViewLib = "androidx.camera:camera-view:${VersionsJetpack.androidxCameraView}"
+    const val androidxCameraExtLib = "androidx.camera:camera-extensions:${VersionsJetpack.androidxCameraExt}"
 }

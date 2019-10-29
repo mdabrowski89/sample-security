@@ -39,7 +39,7 @@ object DependenciesCore {
 
     const val rxAndroidLib = "io.reactivex.rxjava2:rxandroid:${VersionsCore.rxAndroid}"
     const val rxKotlinLib = "io.reactivex.rxjava2:rxkotlin:${VersionsCore.rxKotlin}"
-    const val rxBindingLib = "com.jakewharton.rxbinding2:rxbinding:${VersionsCore.rxBinding}"
+    const val rxBindingLib = "com.jakewharton.rxbinding3:rxbinding:${VersionsCore.rxBinding}"
     const val rxRelayLib = "com.jakewharton.rxrelay2:rxrelay:${VersionsCore.rxRelay}"
 
     const val retrofitLib = "com.squareup.retrofit2:retrofit:${VersionsCore.retrofit}"

@@ -1,30 +1,24 @@
 package pl.mobite.sample.security.ui.components.fingerprint
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
-import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import kotlinx.android.synthetic.main.fragment_fingerprint.*
 import org.koin.android.ext.android.inject
 import pl.mobite.sample.security.R
-import pl.mobite.sample.security.ui.base.mvi.provide
+import pl.mobite.sample.security.ui.base.BaseFragment
+import pl.mobite.sample.security.ui.base.mvi.mviViewModel
 import pl.mobite.sample.security.wrappers.BiometricPromptWrapper
 
 
-class FingerprintFragment: Fragment() {
+class FingerprintFragment: BaseFragment() {
 
-    private val viewModel: FingerprintViewModel by lazy { provide(FingerprintViewModel::class.java) }
-    private val compositeDisposable = CompositeDisposable()
+    private val viewModel: FingerprintViewModel by mviViewModel()
     private val biometricPromptWrapper: BiometricPromptWrapper by inject()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_fingerprint, container, false)
-    }
+    override fun getLayoutResId() = R.layout.fragment_fingerprint
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -40,13 +34,8 @@ class FingerprintFragment: Fragment() {
 
     override fun onStart() {
         super.onStart()
-        viewModel.subscribe(::render).addTo(compositeDisposable)
+        viewModel.subscribe(::render).addTo(onStopDisposables)
         viewModel.onStart()
-    }
-
-    override fun onStop() {
-        compositeDisposable.clear()
-        super.onStop()
     }
 
     private fun render(viewState: FingerprintViewState) {
