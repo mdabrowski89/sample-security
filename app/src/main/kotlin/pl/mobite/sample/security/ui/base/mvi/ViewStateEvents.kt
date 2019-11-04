@@ -84,4 +84,8 @@ abstract class SingleEvent<T>(
             action.invoke(argument)
         }
     }
+
+    fun resend() {
+        isConsumed.set(false)
+    }
 }
